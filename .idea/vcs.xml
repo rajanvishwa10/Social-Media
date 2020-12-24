@@ -2,18 +2,5 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/ChatApplication" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/ClassesApplication" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/CovidTrackerApplication" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/GenderGuessApplication" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/InteriorApplication" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/LoginUIApplication" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/MemeApplication" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/NewsApplication" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/TTSApplication" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/TournamentApplication" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/WeatherApplication" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/WhatsappWebApplication" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/flutter_app3" vcs="Git" />
   </component>
 </project>

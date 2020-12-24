@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -16,6 +17,9 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.provider.MediaStore;
 import android.util.Log;
@@ -32,6 +36,7 @@ import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -49,7 +54,10 @@ import org.w3c.dom.Text;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -60,12 +68,44 @@ public class ProfileFragment extends Fragment {
     Uri uri;
     CircleImageView imageView;
     Bitmap bitmap;
+    List<ImageList> imageList;
     private ProgressDialog progressDialog;
+    RecyclerView recyclerView;
+    RecyclerView.LayoutManager layoutManager;
+    GalleryImageAdapter galleryImageAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
+        imageList = new ArrayList<>();
+        recyclerView = view.findViewById(R.id.recyclerView);
+        layoutManager = new GridLayoutManager(getContext(),3);
+
+        recyclerView.setLayoutManager(layoutManager);
+
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("Images")
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.exists()){
+                    for(DataSnapshot dataSnapshot: snapshot.getChildren()){
+                        ImageList imageList1 = dataSnapshot.getValue(ImageList.class);
+                        imageList.add(imageList1);
+                        Collections.reverse(imageList);
+                    }
+                    galleryImageAdapter = new GalleryImageAdapter(getContext(),imageList);
+                    recyclerView.setAdapter(galleryImageAdapter);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
 
         imageView = view.findViewById(R.id.image);
         imageView.setOnClickListener(new View.OnClickListener() {
@@ -87,6 +127,7 @@ public class ProfileFragment extends Fragment {
         });
 
         textView = view.findViewById(R.id.post);
+        System.out.println(imageList.size());
         textView2 = view.findViewById(R.id.username);
         textView3 = view.findViewById(R.id.name);
         textView4 = view.findViewById(R.id.followers);
@@ -96,7 +137,6 @@ public class ProfileFragment extends Fragment {
         progressDialog.setMessage("Uploading....");
 
         read();
-
         return view;
     }
 
@@ -197,7 +237,6 @@ public class ProfileFragment extends Fragment {
                                     @Override
                                     public void onSuccess(Uri Imguri) {
 
-
                                         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users")
                                                 .child(FirebaseAuth.getInstance().getUid());
 
@@ -237,19 +276,19 @@ public class ProfileFragment extends Fragment {
     private void read() {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("Users");
-        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        myRef.addValueEventListener(new ValueEventListener() {
 
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
                     String name = dataSnapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("FullName").getValue(String.class);
                     String username = dataSnapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Username").getValue(String.class);
-                    String post = dataSnapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("post").getValue(String.class);
+                    long post = dataSnapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("post").getValue(Integer.class);
                     String followers = dataSnapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("followers").getValue(String.class);
                     String followings = dataSnapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("following").getValue(String.class);
                     String url = dataSnapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("profileImage").getValue(String.class);
 
-                    textView.setText(post);
+                    textView.setText(""+post);
                     textView2.setText(username);
                     textView3.setText(name);
                     textView4.setText(followers);
@@ -259,7 +298,6 @@ public class ProfileFragment extends Fragment {
                         if (url.isEmpty()) {
                             imageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_baseline_person_24));
                         } else {
-
                             Glide.with(getContext()).load(url).into(imageView);
                         }
                     } catch (NullPointerException e) {
@@ -279,5 +317,6 @@ public class ProfileFragment extends Fragment {
             }
         });
     }
+
 
 }
