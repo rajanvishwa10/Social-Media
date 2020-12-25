@@ -50,7 +50,7 @@ public class ImageFragment extends Fragment {
     ImageView imageView;
     ProgressDialog progressDialog;
     int post;
-
+    String username;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -58,6 +58,29 @@ public class ImageFragment extends Fragment {
         read();
         progressDialog = new ProgressDialog(getContext());
         progressDialog.setMessage("Uploading...");
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("Users");
+        myRef.addValueEventListener(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    username = dataSnapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Username").getValue(String.class);
+
+                } else {
+                    Toast.makeText(getContext(), "No data", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                //Failed to read value
+                // Toasty.error(ProfileActivity.this, "error", Toast.LENGTH_SHORT).show();
+            }
+        });
+
         Button button = view.findViewById(R.id.postImage);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -65,7 +88,7 @@ public class ImageFragment extends Fragment {
                 progressDialog.show();
                 EditText editText = view.findViewById(R.id.editText);
                 String caption = editText.getText().toString().trim();
-                uploadImage(bitmap, caption);
+                uploadImage(bitmap, caption, username);
             }
         });
         imageView = view.findViewById(R.id.imageView);
@@ -111,7 +134,7 @@ public class ImageFragment extends Fragment {
         return view;
     }
 
-    private void uploadImage(Bitmap bitmap, String caption) {
+    private void uploadImage(Bitmap bitmap, String caption, String username) {
 
         final Date c = Calendar.getInstance().getTime();
         SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.getDefault());
@@ -122,7 +145,7 @@ public class ImageFragment extends Fragment {
 
         final StorageReference reference = FirebaseStorage.getInstance().getReference().
                 child("Images").
-                child(FirebaseAuth.getInstance().getUid()).
+                child(username).
                 child(FirebaseAuth.getInstance().getUid() + formattedDate + ".jpeg");
 
         reference.putBytes(byteArrayOutputStream.toByteArray())
@@ -135,7 +158,7 @@ public class ImageFragment extends Fragment {
                                     @Override
                                     public void onSuccess(Uri Imguri) {
                                         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Images")
-                                                .child(FirebaseAuth.getInstance().getUid())
+                                                .child(username)
                                                 .child(formattedDate);
 
                                         Map<String, Object> updates = new HashMap<>();
@@ -143,6 +166,7 @@ public class ImageFragment extends Fragment {
                                         updates.put("Image", String.valueOf(Imguri));
                                         updates.put("caption", caption);
                                         updates.put("data", formattedDate);
+                                        updates.put("username", username);
 
                                         ref.updateChildren(updates).addOnSuccessListener(new OnSuccessListener<Void>() {
                                             @Override

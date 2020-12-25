@@ -1,19 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ProfileFragment">
+    tools:context=".ProfileActivity">
+
+    <ImageButton
+        android:id="@+id/back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:onClick="back"
+        android:src="@drawable/ic_baseline_keyboard_backspace_24"
+        android:background="@android:color/transparent"/>
 
     <TextView
         android:id="@+id/username"
-        android:layout_marginTop="10dp"
-        android:layout_marginStart="10dp"
-        android:textSize="16sp"
-        android:textColor="@color/black"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="rajanvishwa10"/>
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_toEndOf="@+id/back"
+        android:text="rajanvishwa10"
+        android:textColor="@color/black"
+        android:textSize="16sp" />
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/image"
@@ -137,22 +149,32 @@
         android:textColor="@color/black"
         android:text="RajanVishwakarma" />
 
+    <Button
+        android:id="@+id/follow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Follow"
+        android:background="@color/purple_200"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_below="@id/name"
+        />
+
+    <Button
+        android:id="@+id/unfollow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="UnFollow"
+        android:visibility="gone"
+        android:background="@color/white"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_below="@id/name"/>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/name"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/follow"
         android:layout_marginTop="5dp"/>
-
-    <Button
-        android:id="@+id/button2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:background="@color/black"
-        android:textColor="@color/white"
-        android:layout_marginVertical="5dp"
-        android:layout_marginEnd="5dp"
-        android:text="SignOut" />
-
 </RelativeLayout>

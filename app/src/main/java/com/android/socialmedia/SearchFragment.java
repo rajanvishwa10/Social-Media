@@ -26,7 +26,6 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class SearchFragment extends Fragment {
 
     FloatingActionButton floatingActionButton;
@@ -43,6 +42,7 @@ public class SearchFragment extends Fragment {
         userList = new ArrayList<>();
         recyclerView = view.findViewById(R.id.recyclerView);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(layoutManager);
 
         floatingActionButton = view.findViewById(R.id.search);
@@ -70,7 +70,7 @@ public class SearchFragment extends Fragment {
                         userList.add(user);
                     }
 
-                }else{
+                } else {
                     userList.clear();
                     Toast.makeText(getContext(), "No user", Toast.LENGTH_SHORT).show();
                 }
@@ -85,5 +85,11 @@ public class SearchFragment extends Fragment {
         });
 
 
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        userList.clear();
     }
 }

@@ -73,39 +73,19 @@ public class ProfileFragment extends Fragment {
     RecyclerView recyclerView;
     RecyclerView.LayoutManager layoutManager;
     GalleryImageAdapter galleryImageAdapter;
+    String username;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
+        //read();
         imageList = new ArrayList<>();
         recyclerView = view.findViewById(R.id.recyclerView);
-        layoutManager = new GridLayoutManager(getContext(),3);
+        layoutManager = new GridLayoutManager(getContext(), 3);
 
+        recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(layoutManager);
-
-        final FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("Images")
-                .child(FirebaseAuth.getInstance().getCurrentUser().getUid());
-        myRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if(snapshot.exists()){
-                    for(DataSnapshot dataSnapshot: snapshot.getChildren()){
-                        ImageList imageList1 = dataSnapshot.getValue(ImageList.class);
-                        imageList.add(imageList1);
-                        Collections.reverse(imageList);
-                    }
-                    galleryImageAdapter = new GalleryImageAdapter(getContext(),imageList);
-                    recyclerView.setAdapter(galleryImageAdapter);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
 
         imageView = view.findViewById(R.id.image);
         imageView.setOnClickListener(new View.OnClickListener() {
@@ -127,7 +107,6 @@ public class ProfileFragment extends Fragment {
         });
 
         textView = view.findViewById(R.id.post);
-        System.out.println(imageList.size());
         textView2 = view.findViewById(R.id.username);
         textView3 = view.findViewById(R.id.name);
         textView4 = view.findViewById(R.id.followers);
@@ -136,7 +115,6 @@ public class ProfileFragment extends Fragment {
         progressDialog = new ProgressDialog(getContext());
         progressDialog.setMessage("Uploading....");
 
-        read();
         return view;
     }
 
@@ -159,7 +137,6 @@ public class ProfileFragment extends Fragment {
 
         } else if (requestCode == 0 && resultCode == getActivity().RESULT_OK) {
             bitmap = (Bitmap) data.getExtras().get("data");
-
             imageView.setImageBitmap(bitmap);
             progressDialog.show();
             uploadImage(bitmap);
@@ -282,17 +259,40 @@ public class ProfileFragment extends Fragment {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
                     String name = dataSnapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("FullName").getValue(String.class);
-                    String username = dataSnapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Username").getValue(String.class);
+                    username = dataSnapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Username").getValue(String.class);
                     long post = dataSnapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("post").getValue(Integer.class);
-                    String followers = dataSnapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("followers").getValue(String.class);
-                    String followings = dataSnapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("following").getValue(String.class);
+                    long followers = dataSnapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("followers").getValue(Integer.class);
+                    long followings = dataSnapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("following").getValue(Integer.class);
                     String url = dataSnapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("profileImage").getValue(String.class);
 
-                    textView.setText(""+post);
+                    final FirebaseDatabase database = FirebaseDatabase.getInstance();
+                    DatabaseReference myRef = database.getReference("Images")
+                            .child(username);
+                    myRef.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if (snapshot.exists()) {
+                                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                                    ImageList imageList1 = dataSnapshot.getValue(ImageList.class);
+                                    imageList.add(imageList1);
+                                    Collections.reverse(imageList);
+                                }
+                                galleryImageAdapter = new GalleryImageAdapter(getContext(), imageList);
+                                recyclerView.setAdapter(galleryImageAdapter);
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+
+                    textView.setText("" + post);
                     textView2.setText(username);
                     textView3.setText(name);
-                    textView4.setText(followers);
-                    textView5.setText(followings);
+                    textView4.setText("" + followers);
+                    textView5.setText("" + followings);
 
                     try {
                         if (url.isEmpty()) {
@@ -316,7 +316,18 @@ public class ProfileFragment extends Fragment {
                 // Toasty.error(ProfileActivity.this, "error", Toast.LENGTH_SHORT).show();
             }
         });
+
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        imageList.clear();
+    }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        read();
+    }
 }

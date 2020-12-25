@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityOptionsCompat;
@@ -20,8 +21,8 @@ import java.util.List;
 
 public class GalleryImageAdapter extends RecyclerView.Adapter<GalleryImageAdapter.ViewHolder>{
 
-    private Context context;
-    private List<ImageList> imageLists;
+    private final Context context;
+    private final List<ImageList> imageLists;
 
     public GalleryImageAdapter(Context context, List<ImageList> imageLists){
         this.context = context;
@@ -52,6 +53,8 @@ public class GalleryImageAdapter extends RecyclerView.Adapter<GalleryImageAdapte
                 context.startActivity(intent,activityOptionsCompat.toBundle());
             }
         });
+        System.out.println(imageList.getData());
+       // holder.textView.setText(imageList.getData());
     }
 
     @Override

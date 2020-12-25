@@ -1,6 +1,7 @@
 package com.android.socialmedia;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,8 +20,8 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder> {
 
-    private Context context;
-    private List<User> userList;
+    private final Context context;
+    private final List<User> userList;
 
     public SearchAdapter(Context context, List<User> userList) {
         this.context = context;
@@ -30,7 +31,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
     @NonNull
     @Override
     public SearchAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.search_profile,parent,false);
+        View view = LayoutInflater.from(context).inflate(R.layout.search_profile, parent, false);
         return new SearchAdapter.ViewHolder(view);
     }
 
@@ -39,14 +40,19 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
         User user = userList.get(position);
         String username = user.getUsername();
         String profilePic = user.getProfileImage();
+        String fullname = user.getFullName();
 
         holder.textView.setText(username);
+        holder.textView2.setText(fullname);
         Glide.with(context).load(profilePic).into(holder.circleImageView);
 
         holder.linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(context, username, Toast.LENGTH_SHORT).show();
+                userList.clear();
+                Intent intent = new Intent(context, ProfileActivity.class);
+                intent.putExtra("username", username);
+                context.startActivity(intent);
             }
         });
     }
@@ -57,12 +63,14 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView textView;
+        TextView textView, textView2;
         CircleImageView circleImageView;
         LinearLayout linearLayout;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             textView = itemView.findViewById(R.id.username);
+            textView2 = itemView.findViewById(R.id.fullname);
             circleImageView = itemView.findViewById(R.id.profilepic);
             linearLayout = itemView.findViewById(R.id.linearLayout);
         }

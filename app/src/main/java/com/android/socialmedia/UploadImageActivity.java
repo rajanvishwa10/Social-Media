@@ -22,11 +22,16 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class UploadImageActivity extends AppCompatActivity {
-    TextView textView,textView2;
+    TextView textView, textView2, textView3;
     CircleImageView circleImageView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,12 +49,27 @@ public class UploadImageActivity extends AppCompatActivity {
         circleImageView = findViewById(R.id.profilepic);
         textView = findViewById(R.id.username);
         textView2 = findViewById(R.id.username2);
+        textView3 = findViewById(R.id.date);
+
         TextView textView1 = findViewById(R.id.caption);
 
         Glide.with(this).load(getIntent().getStringExtra("image")).into(imageView);
         textView1.setText(getIntent().getStringExtra("caption"));
+        String date = getIntent().getStringExtra("date");
+        String[] dateSplit = date.split("\\s+");
+        try {
+            SimpleDateFormat spf = new SimpleDateFormat("dd-MM-yyyy");
+            Date newDate = spf.parse(dateSplit[0]);
+            spf = new SimpleDateFormat("dd, MMM");
+            date = spf.format(newDate);
+            textView3.setText(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
         read();
     }
+
     private void read() {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("Users");
