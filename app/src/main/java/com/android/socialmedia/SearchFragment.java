@@ -84,7 +84,6 @@ public class SearchFragment extends Fragment {
             }
         });
 
-
     }
 
     @Override

@@ -28,6 +28,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -74,7 +75,8 @@ public class ProfileFragment extends Fragment {
     RecyclerView.LayoutManager layoutManager;
     GalleryImageAdapter galleryImageAdapter;
     String username;
-
+    RelativeLayout followerRelative, followingRelative;
+    
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -112,6 +114,27 @@ public class ProfileFragment extends Fragment {
         textView4 = view.findViewById(R.id.followers);
         textView5 = view.findViewById(R.id.following);
 
+        followerRelative = view.findViewById(R.id.followerRelative);
+        followingRelative = view.findViewById(R.id.followingRelative);
+        followerRelative.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), ListActivity.class);
+                intent.putExtra("username",username);
+                intent.putExtra("string","Followers");
+                startActivity(intent);
+            }
+        });
+        followingRelative.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), ListActivity.class);
+                intent.putExtra("username",username);
+                intent.putExtra("string","Following");
+                startActivity(intent);
+            }
+        });
+        
         progressDialog = new ProgressDialog(getContext());
         progressDialog.setMessage("Uploading....");
 

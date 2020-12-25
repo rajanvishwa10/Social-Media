@@ -12,7 +12,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.SocialMedia">
-        <activity android:name=".ProfileActivity"></activity>
+        <activity android:name=".ListActivity"></activity>
+        <activity android:name=".ProfileActivity" />
         <activity android:name=".UploadImageActivity" />
         <activity
             android:name=".RegisterActivity"

@@ -5,9 +5,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,6 +48,7 @@ public class ProfileActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     RecyclerView.LayoutManager layoutManager;
     GalleryImageAdapter galleryImageAdapter;
+    RelativeLayout followerRelative, followingRelative;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +78,26 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
+        followerRelative = findViewById(R.id.followerRelative);
+        followingRelative = findViewById(R.id.followingRelative);
+        followerRelative.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), ListActivity.class);
+                intent.putExtra("username",username);
+                intent.putExtra("string","Followers");
+                startActivity(intent);
+            }
+        });
+        followingRelative.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), ListActivity.class);
+                intent.putExtra("username",username);
+                intent.putExtra("string","Following");
+                startActivity(intent);
+            }
+        });
 
         DatabaseReference myRef = database.getReference("Users");
         myRef.addValueEventListener(new ValueEventListener() {
@@ -102,7 +125,8 @@ public class ProfileActivity extends AppCompatActivity {
                                         button2.setOnClickListener(new View.OnClickListener() {
                                             @Override
                                             public void onClick(View v) {
-
+                                                button.setVisibility(View.VISIBLE);
+                                                button2.setVisibility(View.GONE);
                                                 Toast.makeText(ProfileActivity.this, "Unfollow", Toast.LENGTH_SHORT).show();
                                                 DatabaseReference ref = FirebaseDatabase.getInstance().getReference()
                                                         .child(userName)
@@ -113,10 +137,23 @@ public class ProfileActivity extends AppCompatActivity {
                                                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                                                         for (DataSnapshot dataSnapshot2 : snapshot.getChildren()) {
                                                             dataSnapshot2.getRef().removeValue();
-
                                                         }
-                                                        button.setVisibility(View.VISIBLE);
-                                                        button2.setVisibility(View.GONE);
+                                                    }
+                                                    @Override
+                                                    public void onCancelled(@NonNull DatabaseError error) {
+
+                                                    }
+                                                });
+
+                                                DatabaseReference reference = FirebaseDatabase.getInstance().getReference()
+                                                        .child(username).child("followers");
+                                                Query query2 = reference.orderByChild("followerUsername").equalTo(userName);
+                                                query2.addListenerForSingleValueEvent(new ValueEventListener() {
+                                                    @Override
+                                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                        for (DataSnapshot dataSnapshot2 : snapshot.getChildren()) {
+                                                            dataSnapshot2.getRef().removeValue();
+                                                        }
                                                     }
 
                                                     @Override
@@ -124,6 +161,7 @@ public class ProfileActivity extends AppCompatActivity {
 
                                                     }
                                                 });
+
                                                 DatabaseReference databaseReference1 = FirebaseDatabase.getInstance().getReference("Users").
                                                         child(FirebaseAuth.getInstance().getCurrentUser().getUid());
                                                 Map<String, Object> update = new HashMap<>();
@@ -225,6 +263,13 @@ public class ProfileActivity extends AppCompatActivity {
                     }
                 });
 
+                DatabaseReference reference = FirebaseDatabase.getInstance().getReference()
+                        .child(username).child("followers").child(formattedDate);
+                Map<String, Object> updates2 = new HashMap<>();
+
+                updates2.put("followerUsername", userName);
+                reference.updateChildren(updates2);
+
                 DatabaseReference databaseReference1 = FirebaseDatabase.getInstance().getReference("Users").
                         child(FirebaseAuth.getInstance().getCurrentUser().getUid());
                 Map<String, Object> update = new HashMap<>();
@@ -271,7 +316,7 @@ public class ProfileActivity extends AppCompatActivity {
                         textView4.setText("" + followers);
                         textView5.setText("" + followings);
 
-                        Glide.with(ProfileActivity.this).load(url).into(circleImageView);
+                        Glide.with(getApplicationContext()).load(url).into(circleImageView);
                     }
                 } else {
                     Toast.makeText(getApplicationContext(), "No user", Toast.LENGTH_SHORT).show();

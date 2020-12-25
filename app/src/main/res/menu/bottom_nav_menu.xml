@@ -13,7 +13,7 @@
     <item
         android:id="@+id/add"
         android:icon="@drawable/ic_baseline_add_circle_24"
-        android:title="Add Image"/>
+        android:title="Upload"/>
 
     <item
         android:id="@+id/Profile"

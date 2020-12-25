@@ -10,6 +10,7 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Base64;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,6 +32,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class UploadImageActivity extends AppCompatActivity {
     TextView textView, textView2, textView3;
     CircleImageView circleImageView;
+    Button button, button2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +52,9 @@ public class UploadImageActivity extends AppCompatActivity {
         textView = findViewById(R.id.username);
         textView2 = findViewById(R.id.username2);
         textView3 = findViewById(R.id.date);
+
+        button = findViewById(R.id.like);
+        button2 = findViewById(R.id.unlike);
 
         TextView textView1 = findViewById(R.id.caption);
 
@@ -87,7 +92,7 @@ public class UploadImageActivity extends AppCompatActivity {
                         if (url.isEmpty()) {
                             circleImageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_baseline_person_24));
                         } else {
-                            Glide.with(UploadImageActivity.this).load(url).into(circleImageView);
+                            Glide.with(getApplicationContext()).load(url).into(circleImageView);
                         }
                     } catch (NullPointerException e) {
                     }
@@ -105,5 +110,16 @@ public class UploadImageActivity extends AppCompatActivity {
                 // Toasty.error(ProfileActivity.this, "error", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    public void like(View view) {
+        Toast.makeText(this, "Liked", Toast.LENGTH_SHORT).show();
+        button.setVisibility(View.GONE);
+        button2.setVisibility(View.VISIBLE);
+    }
+
+    public void unlike(View view) {
+        button.setVisibility(View.VISIBLE);
+        button2.setVisibility(View.GONE);
     }
 }
