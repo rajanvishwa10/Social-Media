@@ -1,14 +1,23 @@
 package com.android.socialmedia;
 
 public class followList {
-    String followingUsername, followerUsername;
+    String followingUsername, followerUsername, likerUsername;
 
-    public followList(String followingUsername, String followerUsername) {
+    public followList(String followingUsername, String followerUsername, String likerUsername) {
         this.followingUsername = followingUsername;
         this.followerUsername = followerUsername;
+        this.likerUsername = likerUsername;
     }
 
     public followList() {
+    }
+
+    public String getLikerUsername() {
+        return likerUsername;
+    }
+
+    public void setLikerUsername(String likerUsername) {
+        this.likerUsername = likerUsername;
     }
 
     public String getFollowingUsername() {

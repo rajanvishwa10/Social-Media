@@ -23,10 +23,12 @@ public class GalleryImageAdapter extends RecyclerView.Adapter<GalleryImageAdapte
 
     private final Context context;
     private final List<ImageList> imageLists;
+    private final String username;
 
-    public GalleryImageAdapter(Context context, List<ImageList> imageLists){
+    public GalleryImageAdapter(Context context, List<ImageList> imageLists, String username){
         this.context = context;
         this.imageLists = imageLists;
+        this.username = username;
     }
 
     @NonNull
@@ -50,6 +52,7 @@ public class GalleryImageAdapter extends RecyclerView.Adapter<GalleryImageAdapte
                 intent.putExtra("image",imageList.getImage());
                 intent.putExtra("caption",imageList.getCaption());
                 intent.putExtra("date",imageList.getData());
+                intent.putExtra("username",username);
                 context.startActivity(intent,activityOptionsCompat.toBundle());
             }
         });

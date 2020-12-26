@@ -1,7 +1,7 @@
 package com.android.socialmedia;
 
 public class ImageList {
-    String Image,caption,data;
+    String Image, caption, data;
 
     public ImageList() {
     }
@@ -11,6 +11,7 @@ public class ImageList {
         this.caption = caption;
         this.data = data;
     }
+
 
     public String getCaption() {
         return caption;

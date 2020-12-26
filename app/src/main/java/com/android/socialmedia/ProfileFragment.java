@@ -300,7 +300,7 @@ public class ProfileFragment extends Fragment {
                                     imageList.add(imageList1);
                                     Collections.reverse(imageList);
                                 }
-                                galleryImageAdapter = new GalleryImageAdapter(getContext(), imageList);
+                                galleryImageAdapter = new GalleryImageAdapter(getContext(), imageList, username);
                                 recyclerView.setAdapter(galleryImageAdapter);
                             }
                         }
@@ -351,6 +351,7 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+        imageList.clear();
         read();
     }
 }

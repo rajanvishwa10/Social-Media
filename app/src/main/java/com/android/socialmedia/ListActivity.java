@@ -27,6 +27,7 @@ public class ListActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     FollowAdapter followAdapter;
     FollowAdapter2 followAdapter2;
+    LikeAdapter likeAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,13 +52,13 @@ public class ListActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(layoutManager);
 
-        if(data.equals("Followers")){
+        if (data.equals("Followers")) {
             DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
             Query query = databaseReference.child(username).child("followers");
             query.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    for(DataSnapshot dataSnapshot : snapshot.getChildren()){
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         System.out.println(dataSnapshot.child("followerUsername").getValue(String.class));
                         followList user = dataSnapshot.getValue(followList.class);
                         userList.add(user);
@@ -71,13 +72,48 @@ public class ListActivity extends AppCompatActivity {
 
                 }
             });
-        }else{
+        } else if (data.equals("Likes")) {
+            String image = getIntent().getStringExtra("image");
+            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+            databaseReference.child("Images").child(username).
+                    orderByChild("Image").equalTo(image).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        dataSnapshot.getRef().child("userLiked").addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                if (snapshot.exists()) {
+                                    for (DataSnapshot snapshot1 : snapshot.getChildren()) {
+                                        System.out.println(snapshot1.child("likerUsername").getValue(String.class));
+                                        followList followList = snapshot1.getValue(followList.class);
+                                        userList.add(followList);
+                                    }
+                                    likeAdapter = new LikeAdapter(getApplicationContext(), userList);
+                                    recyclerView.setAdapter(likeAdapter);
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+
+                            }
+                        });
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+        } else {
             DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
             Query query = databaseReference.child(username).child("following");
             query.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    for(DataSnapshot dataSnapshot : snapshot.getChildren()){
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         System.out.println(dataSnapshot.child("followingUsername").getValue(String.class));
                         followList user = dataSnapshot.getValue(followList.class);
                         userList.add(user);

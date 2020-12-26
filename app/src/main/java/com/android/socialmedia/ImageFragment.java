@@ -167,6 +167,7 @@ public class ImageFragment extends Fragment {
                                         updates.put("caption", caption);
                                         updates.put("data", formattedDate);
                                         updates.put("username", username);
+                                        updates.put("likes", 0);
 
                                         ref.updateChildren(updates).addOnSuccessListener(new OnSuccessListener<Void>() {
                                             @Override

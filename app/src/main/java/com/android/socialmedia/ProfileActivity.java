@@ -209,36 +209,10 @@ public class ProfileActivity extends AppCompatActivity {
 
 
         imageList = new ArrayList<>();
+        imageList.clear();
         layoutManager = new GridLayoutManager(ProfileActivity.this, 3);
 
         recyclerView.setLayoutManager(layoutManager);
-
-
-        DatabaseReference databaseReference = database.getReference().child("Images")
-                .child(username);
-        Query query = databaseReference.orderByChild("username").equalTo(username);
-        query.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        ImageList imageList1 = dataSnapshot.getValue(ImageList.class);
-                        imageList.add(imageList1);
-                        Collections.reverse(imageList);
-                        System.out.println("Images = " + dataSnapshot.child("Image").getValue(String.class));
-                    }
-                    galleryImageAdapter = new GalleryImageAdapter(ProfileActivity.this, imageList);
-                    recyclerView.setAdapter(galleryImageAdapter);
-                } else {
-                    System.out.println(false);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -297,6 +271,35 @@ public class ProfileActivity extends AppCompatActivity {
         });
     }
 
+    private void read1(String username){
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference databaseReference = database.getReference().child("Images")
+                .child(username);
+        Query query = databaseReference.orderByChild("username").equalTo(username);
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        ImageList imageList1 = dataSnapshot.getValue(ImageList.class);
+                        imageList.add(imageList1);
+                        Collections.reverse(imageList);
+                        System.out.println("Images = " + dataSnapshot.child("Image").getValue(String.class));
+                    }
+                    galleryImageAdapter = new GalleryImageAdapter(ProfileActivity.this, imageList, username);
+                    recyclerView.setAdapter(galleryImageAdapter);
+                } else {
+                    System.out.println(false);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
     private void read(String username) {
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
         Query query = databaseReference.child("Users").orderByChild("Username").equalTo(username);
@@ -337,5 +340,18 @@ public class ProfileActivity extends AppCompatActivity {
 
     private void back() {
         onBackPressed();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        imageList.clear();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        imageList.clear();
+        read1(getIntent().getStringExtra("username"));
     }
 }

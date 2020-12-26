@@ -1,9 +1,12 @@
 package com.android.socialmedia;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -11,6 +14,7 @@ import android.os.Bundle;
 import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,13 +30,17 @@ import com.google.firebase.database.ValueEventListener;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class UploadImageActivity extends AppCompatActivity {
-    TextView textView, textView2, textView3;
+    TextView textView, textView2, textView3, textView4;
     CircleImageView circleImageView;
-    Button button, button2;
+    ImageButton button, button2;
+    String username, Image, currentUsername;
+    int likes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,18 +55,43 @@ public class UploadImageActivity extends AppCompatActivity {
             }
         });
 
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("Users");
+        myRef.addValueEventListener(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    currentUsername = dataSnapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Username").getValue(String.class);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
         ImageView imageView = findViewById(R.id.imageView);
         circleImageView = findViewById(R.id.profilepic);
         textView = findViewById(R.id.username);
         textView2 = findViewById(R.id.username2);
         textView3 = findViewById(R.id.date);
+        textView4 = findViewById(R.id.likescount);
 
         button = findViewById(R.id.like);
         button2 = findViewById(R.id.unlike);
 
+        username = getIntent().getStringExtra("username");
+
         TextView textView1 = findViewById(R.id.caption);
 
-        Glide.with(this).load(getIntent().getStringExtra("image")).into(imageView);
+        Image = getIntent().getStringExtra("image");
+
+        textView.setText(username);
+        textView2.setText(username + " : ");
+
+        Glide.with(this).load(Image).into(imageView);
         textView1.setText(getIntent().getStringExtra("caption"));
         String date = getIntent().getStringExtra("date");
         String[] dateSplit = date.split("\\s+");
@@ -72,54 +105,186 @@ public class UploadImageActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        read();
-    }
-
-    private void read() {
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("Users");
-        myRef.addValueEventListener(new ValueEventListener() {
-
+        read(username);
+        read2(username);
+        button.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    String username = dataSnapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Username").getValue(String.class);
-                    String url = dataSnapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("profileImage").getValue(String.class);
-
-                    textView.setText(username);
-                    textView2.setText(username + " : ");
-                    try {
-                        if (url.isEmpty()) {
-                            circleImageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_baseline_person_24));
-                        } else {
-                            Glide.with(getApplicationContext()).load(url).into(circleImageView);
-                        }
-                    } catch (NullPointerException e) {
-                    }
-
-
-                } else {
-                    Toast.makeText(UploadImageActivity.this, "No data", Toast.LENGTH_SHORT).show();
-                }
-
+            public void onClick(View v) {
+                like();
             }
-
+        });
+        textView4.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCancelled(DatabaseError error) {
-                //Failed to read value
-                // Toasty.error(ProfileActivity.this, "error", Toast.LENGTH_SHORT).show();
+            public void onClick(View v) {
+                Intent intent = new Intent(UploadImageActivity.this, ListActivity.class);
+                intent.putExtra("string","Likes");
+                intent.putExtra("username",username);
+                intent.putExtra("image",Image);
+                startActivity(intent);
             }
         });
     }
 
-    public void like(View view) {
+    private void read2(String username) {
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+        databaseReference.child("Images").child(username).
+                orderByChild("Image").equalTo(Image).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    likes = dataSnapshot.child("likes").getValue(Integer.class);
+                    textView4.setText("Likes : " + likes);
+                    dataSnapshot.getRef().child("userLiked").addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if (snapshot.exists()) {
+                                for (DataSnapshot snapshot1 : snapshot.getChildren()) {
+                                    String likerUsername = snapshot1.child("likerUsername").getValue(String.class);
+//
+                                    System.out.println(likerUsername);
+                                    if (likerUsername.equals(currentUsername)) {
+                                        button.setVisibility(View.GONE);
+                                        button2.setVisibility(View.VISIBLE);
+                                        button2.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                unlike();
+                                            }
+                                        });
+                                        break;
+                                    } else {
+                                        button.setVisibility(View.VISIBLE);
+                                        button2.setVisibility(View.GONE);
+                                    }
+
+                                }
+                            }else{
+                                System.out.println("snapshot not exists");
+                                button.setVisibility(View.VISIBLE);
+                                button2.setVisibility(View.GONE);
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    private void read(String username) {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference databaseReference = database.getReference().child("Users");
+        databaseReference.orderByChild("Username").equalTo(username).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        String url = dataSnapshot.child("profileImage").getValue(String.class);
+                        try {
+                            if (url.isEmpty()) {
+                                circleImageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_baseline_person_24));
+                            } else {
+                                Glide.with(getApplicationContext()).load(url).into(circleImageView);
+                            }
+                        } catch (NullPointerException e) {
+                        }
+                    }
+                } else {
+                    System.out.println("No data");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    private void like() {
         Toast.makeText(this, "Liked", Toast.LENGTH_SHORT).show();
         button.setVisibility(View.GONE);
         button2.setVisibility(View.VISIBLE);
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+        databaseReference.child("Images").child(username).
+                orderByChild("Image").equalTo(Image).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot snapshot1 : snapshot.getChildren()) {
+                    snapshot1.getRef().child("likes").setValue(likes + 1);
+                    int like = likes + 1;
+                    Map<String, Object> updates = new HashMap<String, Object>();
+                    updates.put("likerUsername", currentUsername);
+                    updates.put("like", like);
+                    snapshot1.getRef().child("userLiked").child(currentUsername).setValue(updates);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
-    public void unlike(View view) {
+    private void unlike() {
         button.setVisibility(View.VISIBLE);
         button2.setVisibility(View.GONE);
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+        databaseReference.child("Images").child(username).
+                orderByChild("Image").equalTo(Image).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                for (DataSnapshot snapshot1 : snapshot.getChildren()) {
+                    snapshot1.getRef().child("likes").setValue(likes - 1);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+        DatabaseReference databaseReference1 = FirebaseDatabase.getInstance().getReference();
+        databaseReference1.child("Images").child(username).
+                orderByChild("Image").equalTo(Image).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot dataSnapshot2 : snapshot.getChildren()) {
+                    dataSnapshot2.getRef().child("userLiked")
+                            .orderByChild("likerUsername").equalTo(currentUsername)
+                            .addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                                        dataSnapshot.getRef().removeValue();
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+
+                                }
+                            });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
     }
 }
