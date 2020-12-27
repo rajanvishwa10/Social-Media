@@ -56,6 +56,7 @@ public class ProfileActivity extends AppCompatActivity {
         setContentView(R.layout.activity_profile);
         String username = getIntent().getStringExtra("username");
         read(username);
+        read1(username);
 
         textView = findViewById(R.id.username);
         textView2 = findViewById(R.id.name);
@@ -280,6 +281,7 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
+                    imageList.clear();
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         ImageList imageList1 = dataSnapshot.getValue(ImageList.class);
                         imageList.add(imageList1);
@@ -347,11 +349,11 @@ public class ProfileActivity extends AppCompatActivity {
         super.onResume();
         imageList.clear();
     }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        imageList.clear();
-        read1(getIntent().getStringExtra("username"));
-    }
+//
+//    @Override
+//    protected void onStart() {
+//        super.onStart();
+//        imageList.clear();
+//        read1(getIntent().getStringExtra("username"));
+//    }
 }

@@ -38,8 +38,8 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class UploadImageActivity extends AppCompatActivity {
     TextView textView, textView2, textView3, textView4;
     CircleImageView circleImageView;
-    ImageButton button, button2;
-    String username, Image, currentUsername;
+    ImageButton button, button2, button3;
+    String username, Image, currentUsername, url;
     int likes;
 
     @Override
@@ -81,6 +81,7 @@ public class UploadImageActivity extends AppCompatActivity {
 
         button = findViewById(R.id.like);
         button2 = findViewById(R.id.unlike);
+        button3 = findViewById(R.id.comment);
 
         username = getIntent().getStringExtra("username");
 
@@ -91,8 +92,10 @@ public class UploadImageActivity extends AppCompatActivity {
         textView.setText(username);
         textView2.setText(username + " : ");
 
+        String caption = getIntent().getStringExtra("caption");
+
         Glide.with(this).load(Image).into(imageView);
-        textView1.setText(getIntent().getStringExtra("caption"));
+        textView1.setText(caption);
         String date = getIntent().getStringExtra("date");
         String[] dateSplit = date.split("\\s+");
         try {
@@ -117,9 +120,21 @@ public class UploadImageActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(UploadImageActivity.this, ListActivity.class);
-                intent.putExtra("string","Likes");
-                intent.putExtra("username",username);
-                intent.putExtra("image",Image);
+                intent.putExtra("string", "Likes");
+                intent.putExtra("username", username);
+                intent.putExtra("image", Image);
+                startActivity(intent);
+            }
+
+        });
+        button3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), CommentActivity.class);
+                intent.putExtra("username", username);
+                intent.putExtra("image", Image);
+                intent.putExtra("caption", caption);
+                intent.putExtra("profilepic", url);
                 startActivity(intent);
             }
         });
@@ -140,7 +155,7 @@ public class UploadImageActivity extends AppCompatActivity {
                             if (snapshot.exists()) {
                                 for (DataSnapshot snapshot1 : snapshot.getChildren()) {
                                     String likerUsername = snapshot1.child("likerUsername").getValue(String.class);
-//
+
                                     System.out.println(likerUsername);
                                     if (likerUsername.equals(currentUsername)) {
                                         button.setVisibility(View.GONE);
@@ -158,7 +173,7 @@ public class UploadImageActivity extends AppCompatActivity {
                                     }
 
                                 }
-                            }else{
+                            } else {
                                 System.out.println("snapshot not exists");
                                 button.setVisibility(View.VISIBLE);
                                 button2.setVisibility(View.GONE);
@@ -188,7 +203,7 @@ public class UploadImageActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        String url = dataSnapshot.child("profileImage").getValue(String.class);
+                        url = dataSnapshot.child("profileImage").getValue(String.class);
                         try {
                             if (url.isEmpty()) {
                                 circleImageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_baseline_person_24));

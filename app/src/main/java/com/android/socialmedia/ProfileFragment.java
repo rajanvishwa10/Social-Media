@@ -295,6 +295,7 @@ public class ProfileFragment extends Fragment {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             if (snapshot.exists()) {
+                                imageList.clear();
                                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                                     ImageList imageList1 = dataSnapshot.getValue(ImageList.class);
                                     imageList.add(imageList1);
