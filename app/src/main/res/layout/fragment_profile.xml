@@ -9,11 +9,11 @@
         android:id="@+id/username"
         android:layout_marginTop="10dp"
         android:layout_marginStart="10dp"
+        android:textStyle="bold"
         android:textSize="16sp"
         android:textColor="@color/black"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="rajanvishwa10"/>
+        android:layout_height="wrap_content"/>
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/image"
@@ -25,6 +25,7 @@
         android:layout_marginTop="20dp" />
 
     <LinearLayout
+        android:id="@+id/linear"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignTop="@+id/image"
@@ -49,7 +50,6 @@
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="10dp"
-                    android:text="39"
                     android:textColor="@color/black"
                     android:textSize="16sp" />
 
@@ -82,7 +82,6 @@
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="10dp"
-                    android:text="39"
                     android:textColor="@color/black"
                     android:textSize="16sp" />
 
@@ -113,7 +112,6 @@
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="10dp"
-                    android:text="39"
                     android:textColor="@color/black"
                     android:textSize="16sp" />
 
@@ -133,28 +131,37 @@
         android:id="@+id/name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textStyle="bold"
         android:layout_below="@+id/image"
         android:layout_marginTop="10dp"
         android:layout_marginStart="10dp"
-        android:textColor="@color/black"
-        android:text="RajanVishwakarma" />
+        android:textSize="15sp"
+        android:textColor="@color/black" />
+
+    <TextView
+        android:id="@+id/bio"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/name"
+        android:layout_marginTop="5dp"
+        android:layout_marginStart="10dp"
+        android:textColor="@color/black" />
+
+    <Button
+        android:id="@+id/editprofile"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Edit Profile"
+        android:background="@color/white"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_below="@+id/bio"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/name"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/editprofile"
         android:layout_marginTop="5dp"/>
-
-    <Button
-        android:id="@+id/button2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:background="@color/black"
-        android:textColor="@color/white"
-        android:layout_marginVertical="5dp"
-        android:layout_marginEnd="5dp"
-        android:text="SignOut" />
 
 </RelativeLayout>

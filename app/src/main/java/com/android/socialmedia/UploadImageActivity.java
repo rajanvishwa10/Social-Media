@@ -11,11 +11,13 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,6 +27,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.text.ParseException;
@@ -36,8 +39,9 @@ import java.util.Map;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class UploadImageActivity extends AppCompatActivity {
-    TextView textView, textView2, textView3, textView4;
-    CircleImageView circleImageView;
+    TextView textView, textView2, textView3, textView4, commenterUsername;
+    LinearLayout linearLayout;
+    CircleImageView circleImageView, commenterProfilepic;
     ImageButton button, button2, button3;
     String username, Image, currentUsername, url;
     int likes;
@@ -55,6 +59,10 @@ public class UploadImageActivity extends AppCompatActivity {
             }
         });
 
+        commenterProfilepic = findViewById(R.id.Commenterprofilepic);
+        commenterUsername = findViewById(R.id.Commenterusername);
+        linearLayout = findViewById(R.id.commentLayout);
+
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("Users");
         myRef.addValueEventListener(new ValueEventListener() {
@@ -62,7 +70,8 @@ public class UploadImageActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    currentUsername = dataSnapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Username").getValue(String.class);
+                    currentUsername = dataSnapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                            .child("Username").getValue(String.class);
                 }
             }
 
@@ -136,6 +145,68 @@ public class UploadImageActivity extends AppCompatActivity {
                 intent.putExtra("caption", caption);
                 intent.putExtra("profilepic", url);
                 startActivity(intent);
+            }
+        });
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+        databaseReference.child("Images").child(username).
+                orderByChild("Image").equalTo(Image).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    dataSnapshot.getRef().child("userComment").limitToLast(1).addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if (snapshot.exists()) {
+                                for (DataSnapshot snapshot1 : snapshot.getChildren()) {
+                                    String commenter = snapshot1.child("commenter").getValue(String.class);
+                                    String comment = snapshot1.child("comment").getValue(String.class);
+                                    commenterUsername.setText(Html.fromHtml("<medium><font color='black'>" + commenter + " : " + "</font></medium>"
+                                            + comment));
+                                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("Users");
+                                    Query query = databaseReference.orderByChild("Username").equalTo(commenter);
+                                    query.addValueEventListener(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                            if (snapshot.exists()) {
+                                                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                                                    Glide.with(getApplicationContext()).load(dataSnapshot.child("profileImage").
+                                                            getValue(String.class)).into(commenterProfilepic);
+                                                    linearLayout.setOnClickListener(new View.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(View v) {
+                                                            Intent intent = new Intent(getApplicationContext(), CommentActivity.class);
+                                                            intent.putExtra("username", username);
+                                                            intent.putExtra("image", Image);
+                                                            intent.putExtra("caption", caption);
+                                                            intent.putExtra("profilepic", url);
+                                                            startActivity(intent);
+                                                        }
+                                                    });
+                                                }
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
+
+                                        }
+                                    });
+                                }
+
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
             }
         });
     }

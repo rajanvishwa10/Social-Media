@@ -33,7 +33,6 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:paddingStart="10dp"
-                android:text="sdsd"
                 android:fontFamily="@font/font"
                 android:textColor="@color/black"
                 android:textSize="17sp" />
@@ -45,7 +44,6 @@
                 android:layout_gravity="bottom"
                 android:fontFamily="@font/font"
                 android:paddingStart="10dp"
-                android:text="sdsd"
                 android:textColor="@color/black" />
 
         </LinearLayout>

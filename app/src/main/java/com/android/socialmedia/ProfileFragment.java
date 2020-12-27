@@ -65,29 +65,32 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 
 public class ProfileFragment extends Fragment {
-    TextView textView, textView2, textView3, textView4, textView5;
+    TextView textView, textView2, textView3, textView4, textView5, textView6;
     Uri uri;
     CircleImageView imageView;
     Bitmap bitmap;
     List<ImageList> imageList;
+    Button editProfile;
     private ProgressDialog progressDialog;
     RecyclerView recyclerView;
     RecyclerView.LayoutManager layoutManager;
     GalleryImageAdapter galleryImageAdapter;
     String username;
     RelativeLayout followerRelative, followingRelative;
-    
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
-        //read();
+        read();
         imageList = new ArrayList<>();
         recyclerView = view.findViewById(R.id.recyclerView);
         layoutManager = new GridLayoutManager(getContext(), 3);
 
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(layoutManager);
+
+        editProfile = view.findViewById(R.id.editprofile);
 
         imageView = view.findViewById(R.id.image);
         imageView.setOnClickListener(new View.OnClickListener() {
@@ -97,14 +100,11 @@ public class ProfileFragment extends Fragment {
             }
         });
 
-        Button button = view.findViewById(R.id.button2);
-        button.setOnClickListener(new View.OnClickListener() {
+        editProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FirebaseAuth.getInstance().signOut();
-                Intent intent = new Intent(getContext(), LoginActivity.class);
-                startActivity(intent);
-                getActivity().finish();
+                Intent intentedit = new Intent(getContext(), EditProfileActivity.class);
+                startActivity(intentedit);
             }
         });
 
@@ -113,6 +113,7 @@ public class ProfileFragment extends Fragment {
         textView3 = view.findViewById(R.id.name);
         textView4 = view.findViewById(R.id.followers);
         textView5 = view.findViewById(R.id.following);
+        textView6 = view.findViewById(R.id.bio);
 
         followerRelative = view.findViewById(R.id.followerRelative);
         followingRelative = view.findViewById(R.id.followingRelative);
@@ -120,8 +121,8 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getContext(), ListActivity.class);
-                intent.putExtra("username",username);
-                intent.putExtra("string","Followers");
+                intent.putExtra("username", username);
+                intent.putExtra("string", "Followers");
                 startActivity(intent);
             }
         });
@@ -129,12 +130,12 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getContext(), ListActivity.class);
-                intent.putExtra("username",username);
-                intent.putExtra("string","Following");
+                intent.putExtra("username", username);
+                intent.putExtra("string", "Following");
                 startActivity(intent);
             }
         });
-        
+
         progressDialog = new ProgressDialog(getContext());
         progressDialog.setMessage("Uploading....");
 
@@ -287,6 +288,7 @@ public class ProfileFragment extends Fragment {
                     long followers = dataSnapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("followers").getValue(Integer.class);
                     long followings = dataSnapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("following").getValue(Integer.class);
                     String url = dataSnapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("profileImage").getValue(String.class);
+                    String bio = dataSnapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Bio").getValue(String.class);
 
                     final FirebaseDatabase database = FirebaseDatabase.getInstance();
                     DatabaseReference myRef = database.getReference("Images")
@@ -317,6 +319,7 @@ public class ProfileFragment extends Fragment {
                     textView3.setText(name);
                     textView4.setText("" + followers);
                     textView5.setText("" + followings);
+                    textView6.setText(bio);
 
                     try {
                         if (url.isEmpty()) {
@@ -343,16 +346,16 @@ public class ProfileFragment extends Fragment {
 
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        imageList.clear();
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        imageList.clear();
-        read();
-    }
+//    @Override
+//    public void onResume() {
+//        super.onResume();
+//        imageList.clear();
+//    }
+//
+//    @Override
+//    public void onStart() {
+//        super.onStart();
+//        imageList.clear();
+//        read();
+//    }
 }

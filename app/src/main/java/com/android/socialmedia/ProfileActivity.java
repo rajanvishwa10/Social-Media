@@ -39,7 +39,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ProfileActivity extends AppCompatActivity {
 
-    TextView textView, textView2, textView3, textView4, textView5;
+    TextView textView, textView2, textView3, textView4, textView5, textView6;
     CircleImageView circleImageView;
     String userName;
     int following, followers;
@@ -63,6 +63,7 @@ public class ProfileActivity extends AppCompatActivity {
         textView3 = findViewById(R.id.post);
         textView4 = findViewById(R.id.followers);
         textView5 = findViewById(R.id.following);
+        textView6 = findViewById(R.id.bio);
         circleImageView = findViewById(R.id.image);
         button = findViewById(R.id.follow);
         button2 = findViewById(R.id.unfollow);
@@ -210,7 +211,6 @@ public class ProfileActivity extends AppCompatActivity {
 
 
         imageList = new ArrayList<>();
-        imageList.clear();
         layoutManager = new GridLayoutManager(ProfileActivity.this, 3);
 
         recyclerView.setLayoutManager(layoutManager);
@@ -315,11 +315,13 @@ public class ProfileActivity extends AppCompatActivity {
                         followers = dataSnapshot.child("followers").getValue(Integer.class);
                         long followings = dataSnapshot.child("following").getValue(Integer.class);
                         String url = dataSnapshot.child("profileImage").getValue(String.class);
+                        String bio = dataSnapshot.child("Bio").getValue(String.class);
 
                         textView2.setText(fullName);
                         textView3.setText("" + post);
                         textView4.setText("" + followers);
                         textView5.setText("" + followings);
+                        textView6.setText(bio);
 
                         Glide.with(getApplicationContext()).load(url).into(circleImageView);
                     }
@@ -344,11 +346,11 @@ public class ProfileActivity extends AppCompatActivity {
         onBackPressed();
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        imageList.clear();
-    }
+//    @Override
+//    protected void onResume() {
+//        super.onResume();
+//        imageList.clear();
+//    }
 //
 //    @Override
 //    protected void onStart() {
