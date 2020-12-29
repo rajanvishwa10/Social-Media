@@ -12,7 +12,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.SocialMedia">
-        <activity android:name=".EditProfileActivity"></activity>
+        <activity android:name=".UserChatActivity"></activity>
+        <activity android:name=".NewmessageActivity" />
+        <activity android:name=".MessageActivity" />
+        <activity android:name=".EditProfileActivity" />
         <activity android:name=".CommentActivity" />
         <activity android:name=".ListActivity" />
         <activity android:name=".ProfileActivity" />

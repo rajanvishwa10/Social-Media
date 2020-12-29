@@ -1,5 +1,6 @@
 package com.android.socialmedia;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -63,21 +64,17 @@ public class HomePageFragment extends Fragment {
                                 for(DataSnapshot dataSnapshot : snapshot.getChildren()){
                                     followingUsername = dataSnapshot.child("followingUsername").getValue(String.class);
                                     DatabaseReference databaseReference = database.getReference("Images").child(followingUsername);
-                                    databaseReference.addValueEventListener(new ValueEventListener() {
+                                    databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
                                         @Override
                                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                                             if(snapshot.exists()){
                                                 imagelist.clear();
                                                 for(DataSnapshot dataSnapshot1 : snapshot.getChildren()){
-                                                    System.out.println("datasnapshot1 = "+dataSnapshot1);
                                                     mainpageImagelist mainpageImagelist = dataSnapshot1.getValue(mainpageImagelist.class);
                                                     imagelist.add(mainpageImagelist);
-
-                                                    //System.out.println(followingUsername + " = "+dataSnapshot1.child("Image").getValue(String.class));
                                                 }
                                                 imageAdapter = new MainpageImageAdapter(getContext(), imagelist);
                                                 recyclerView.setAdapter(imageAdapter);
-
                                             }
                                         }
 
@@ -119,7 +116,8 @@ public class HomePageFragment extends Fragment {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
         if(id == R.id.send){
-            Toast.makeText(getContext(), "Send", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(getContext(),MessageActivity.class);
+            startActivity(intent);
         }
         return super.onOptionsItemSelected(item);
     }
