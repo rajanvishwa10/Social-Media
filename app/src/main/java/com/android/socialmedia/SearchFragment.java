@@ -8,10 +8,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.service.autofill.Dataset;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -23,13 +26,15 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class SearchFragment extends Fragment {
 
-    FloatingActionButton floatingActionButton;
     EditText editText;
+    TextView textView;
     List<User> userList;
     RecyclerView recyclerView;
     SearchAdapter searchAdapter;
@@ -45,16 +50,33 @@ public class SearchFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(layoutManager);
 
-        floatingActionButton = view.findViewById(R.id.search);
         editText = view.findViewById(R.id.searchEditText);
-        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+        textView = view.findViewById(R.id.message);
+
+        editText.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onClick(View v) {
-                userList.clear();
-                String text = editText.getText().toString().trim();
-                search(text);
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (!s.toString().trim().isEmpty()) {
+                    search(s.toString().trim());
+                } else {
+                    textView.setVisibility(View.GONE);
+                    userList.clear();
+                    recyclerView.setAdapter(null);
+                }
+
             }
         });
+
         return view;
     }
 
@@ -65,6 +87,8 @@ public class SearchFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
+                    textView.setVisibility(View.GONE);
+                    userList.clear();
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         User user = dataSnapshot.getValue(User.class);
                         userList.add(user);
@@ -72,7 +96,7 @@ public class SearchFragment extends Fragment {
 
                 } else {
                     userList.clear();
-                    Toast.makeText(getContext(), "No user", Toast.LENGTH_SHORT).show();
+                    textView.setVisibility(View.VISIBLE);
                 }
                 searchAdapter = new SearchAdapter(getContext(), userList);
                 recyclerView.setAdapter(searchAdapter);
@@ -86,9 +110,4 @@ public class SearchFragment extends Fragment {
 
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        userList.clear();
-    }
 }

@@ -219,7 +219,7 @@ public class UploadImageActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     likes = dataSnapshot.child("likes").getValue(Integer.class);
-                    textView4.setText("Likes : " + likes);
+                    textView4.setText(likes+" likes");
                     dataSnapshot.getRef().child("userLiked").addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {

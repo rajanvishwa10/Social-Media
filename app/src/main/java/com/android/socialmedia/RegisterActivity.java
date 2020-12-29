@@ -84,10 +84,10 @@ public class RegisterActivity extends AppCompatActivity {
                             hashMap.put("FullName", name);
                             hashMap.put("Username", username);
                             hashMap.put("Email", email);
-                            hashMap.put("Password", password);
                             hashMap.put("post", "0");
                             hashMap.put("followers", "0");
                             hashMap.put("following", "0");
+                            hashMap.put("profileImage", "");
                             FirebaseDatabase.getInstance().getReference("Users").
                                     child(FirebaseAuth.getInstance().getCurrentUser().getUid())
                                     .setValue(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
