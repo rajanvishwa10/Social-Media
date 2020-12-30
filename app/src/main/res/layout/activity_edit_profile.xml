@@ -51,9 +51,9 @@
             android:id="@+id/username"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:enabled="false"
             android:fontFamily="@font/font"
             android:inputType="text"
-            android:enabled="false"
             android:textColor="@color/black" />
 
         <TextView
@@ -66,8 +66,23 @@
             android:id="@+id/bio"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="top"
             android:fontFamily="@font/font"
+            android:gravity="top"
+            android:inputType="textMultiLine"
+            android:textColor="@color/black" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Website" />
+
+        <EditText
+            android:id="@+id/website"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/font"
+            android:gravity="top"
             android:inputType="textMultiLine"
             android:textColor="@color/black" />
 

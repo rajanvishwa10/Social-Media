@@ -14,6 +14,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -65,7 +66,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 
 public class ProfileFragment extends Fragment {
-    TextView textView, textView2, textView3, textView4, textView5, textView6;
+    TextView textView, textView2, textView3, textView4, textView5, textView6, textView7;
     Uri uri;
     CircleImageView imageView;
     Bitmap bitmap;
@@ -114,6 +115,7 @@ public class ProfileFragment extends Fragment {
         textView4 = view.findViewById(R.id.followers);
         textView5 = view.findViewById(R.id.following);
         textView6 = view.findViewById(R.id.bio);
+        textView7 = view.findViewById(R.id.website);
 
         followerRelative = view.findViewById(R.id.followerRelative);
         followingRelative = view.findViewById(R.id.followingRelative);
@@ -289,6 +291,7 @@ public class ProfileFragment extends Fragment {
                     long followings = dataSnapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("following").getValue(Integer.class);
                     String url = dataSnapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("profileImage").getValue(String.class);
                     String bio = dataSnapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Bio").getValue(String.class);
+                    String website = dataSnapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Website").getValue(String.class);
 
                     final FirebaseDatabase database = FirebaseDatabase.getInstance();
                     DatabaseReference myRef = database.getReference("Images")
@@ -319,7 +322,28 @@ public class ProfileFragment extends Fragment {
                     textView3.setText(name);
                     textView4.setText("" + followers);
                     textView5.setText("" + followings);
-                    textView6.setText(bio);
+                    if (bio.length() > 0) {
+                        textView6.setVisibility(View.VISIBLE);
+                        textView6.setText(bio);
+                    } else {
+                        textView6.setVisibility(View.GONE);
+                    }
+                    if (website.length() > 0) {
+                        textView7.setVisibility(View.VISIBLE);
+                        textView7.setText(website);
+                        textView7.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+                                CustomTabsIntent customTabsIntent = builder.build();
+                                customTabsIntent.launchUrl(getContext(), Uri.parse(website));
+                            }
+                        });
+
+                    } else {
+                        textView7.setVisibility(View.GONE);
+                    }
+
 
                     try {
                         if (url.isEmpty()) {

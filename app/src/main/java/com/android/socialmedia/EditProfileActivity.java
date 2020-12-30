@@ -5,7 +5,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -31,7 +33,7 @@ import java.util.Map;
 public class EditProfileActivity extends AppCompatActivity {
 
     Toolbar toolbar;
-    EditText editText, editText2, editText3;
+    EditText editText, editText2, editText3, editText4;
     String name, username, bio;
     Button button;
     ProgressDialog progressDialog;
@@ -44,6 +46,7 @@ public class EditProfileActivity extends AppCompatActivity {
         editText = findViewById(R.id.name);
         editText2 = findViewById(R.id.username);
         editText3 = findViewById(R.id.bio);
+        editText4 = findViewById(R.id.website);
 
         button = findViewById(R.id.update);
 
@@ -70,6 +73,7 @@ public class EditProfileActivity extends AppCompatActivity {
                 updates.put("FullName", editText.getText().toString().trim());
                 updates.put("Username", editText2.getText().toString().trim());
                 updates.put("Bio", editText3.getText().toString().trim());
+                updates.put("Website", editText4.getText().toString().trim());
 
                 ref.updateChildren(updates).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -92,6 +96,10 @@ public class EditProfileActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.signout) {
+            SharedPreferences sharedPreferences = getSharedPreferences("username", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.clear();
+            editor.apply();
             FirebaseAuth.getInstance().signOut();
             Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
             startActivity(intent);
@@ -112,10 +120,7 @@ public class EditProfileActivity extends AppCompatActivity {
                     name = dataSnapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("FullName").getValue(String.class);
                     username = dataSnapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Username").getValue(String.class);
                     bio = dataSnapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Bio").getValue(String.class);
-//                    long post = dataSnapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("post").getValue(Integer.class);
-//                    long followers = dataSnapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("followers").getValue(Integer.class);
-//                    long followings = dataSnapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("following").getValue(Integer.class);
-//                    String url = dataSnapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("profileImage").getValue(String.class);
+                    String website = dataSnapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Website").getValue(String.class);
 
                     editText.setText(name);
                     editText2.setText(username);
@@ -124,7 +129,7 @@ public class EditProfileActivity extends AppCompatActivity {
                     } catch (NullPointerException e) {
                         editText3.setText(bio);
                     }
-
+                    editText4.setText(website);
 //                    try {
 //                        if (url.isEmpty()) {
 //                            imageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_baseline_person_24));

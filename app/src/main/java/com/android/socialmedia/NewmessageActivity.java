@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -77,7 +79,11 @@ public class NewmessageActivity extends AppCompatActivity {
                     userList.clear();
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         User user = dataSnapshot.getValue(User.class);
-                        userList.add(user);
+                        SharedPreferences sharedPreferences = getSharedPreferences("username", Context.MODE_PRIVATE);
+                        String currentUsername = sharedPreferences.getString("username","");
+                        if(!user.getUsername().equals(currentUsername)){
+                            userList.add(user);
+                        }
                     }
 
                 } else {
@@ -94,5 +100,11 @@ public class NewmessageActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
     }
 }

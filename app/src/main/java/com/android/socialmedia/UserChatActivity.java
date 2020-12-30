@@ -7,12 +7,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
@@ -21,6 +23,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
@@ -61,6 +64,16 @@ public class UserChatActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar);
         username = getIntent().getStringExtra("username");
         toolbar.setTitle(username);
+        read(username);
+        toolbar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), ProfileActivity.class);
+                intent.putExtra("username", username);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }
+        });
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
         linearLayoutManager.setStackFromEnd(true);
@@ -96,6 +109,31 @@ public class UserChatActivity extends AppCompatActivity {
         });
 
         seenMessage(username);
+    }
+
+    private void read(String username) {
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+        Query query = databaseReference.child("Users").orderByChild("Username").equalTo(username);
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        String url = dataSnapshot.child("profileImage").getValue(String.class);
+
+                        Glide.with(getApplicationContext()).load(url).into(circleImageView);
+                    }
+                } else {
+                    Toast.makeText(getApplicationContext(), "No user", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
     }
 
     public void sendmess(View view) {
@@ -141,14 +179,34 @@ public class UserChatActivity extends AppCompatActivity {
             }
         });
 
+
         final DatabaseReference databaseReference1 = FirebaseDatabase.getInstance().getReference("Chatlist")
                 .child(currentUsername).child(username);
 
-        databaseReference1.addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference1.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (!snapshot.exists()) {
                     databaseReference1.child("id").setValue(username);
+                    databaseReference1.child("date").setValue(date);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+        final DatabaseReference databaseReference2 = FirebaseDatabase.getInstance().getReference("Chatlist")
+                .child(username).child(currentUsername);
+
+        databaseReference2.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (!snapshot.exists()) {
+                    databaseReference2.child("id").setValue(currentUsername);
+                    databaseReference2.child("date").setValue(date);
                 }
             }
 
@@ -199,11 +257,8 @@ public class UserChatActivity extends AppCompatActivity {
                         if (chat.getSender().equals(currentUsername) && chat.getReceiver().equals(username) ||
                                 chat.getSender().equals(username) && chat.getReceiver().equals(currentUsername)) {
 
-                            System.out.println("m"+chat.getMessage());
                             chats.add(chat);
 
-                        }else{
-                            System.out.println("not mess");
                         }
                         messageAdapter = new MessageAdapter(UserChatActivity.this, chats);
                         recyclerView.setAdapter(messageAdapter);
@@ -221,5 +276,11 @@ public class UserChatActivity extends AppCompatActivity {
                 Toast.makeText(UserChatActivity.this, "error", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
     }
 }

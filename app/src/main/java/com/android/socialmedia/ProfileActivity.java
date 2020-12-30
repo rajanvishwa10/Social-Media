@@ -2,10 +2,12 @@ package com.android.socialmedia;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -39,7 +41,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ProfileActivity extends AppCompatActivity {
 
-    TextView textView, textView2, textView3, textView4, textView5, textView6;
+    TextView textView, textView2, textView3, textView4, textView5, textView6, textView7;
     CircleImageView circleImageView;
     String userName;
     int following, followers;
@@ -64,6 +66,7 @@ public class ProfileActivity extends AppCompatActivity {
         textView4 = findViewById(R.id.followers);
         textView5 = findViewById(R.id.following);
         textView6 = findViewById(R.id.bio);
+        textView7 = findViewById(R.id.website);
         circleImageView = findViewById(R.id.image);
         button = findViewById(R.id.follow);
         button2 = findViewById(R.id.unfollow);
@@ -86,8 +89,8 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), ListActivity.class);
-                intent.putExtra("username",username);
-                intent.putExtra("string","Followers");
+                intent.putExtra("username", username);
+                intent.putExtra("string", "Followers");
                 startActivity(intent);
             }
         });
@@ -95,8 +98,8 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), ListActivity.class);
-                intent.putExtra("username",username);
-                intent.putExtra("string","Following");
+                intent.putExtra("username", username);
+                intent.putExtra("string", "Following");
                 startActivity(intent);
             }
         });
@@ -141,6 +144,7 @@ public class ProfileActivity extends AppCompatActivity {
                                                             dataSnapshot2.getRef().removeValue();
                                                         }
                                                     }
+
                                                     @Override
                                                     public void onCancelled(@NonNull DatabaseError error) {
 
@@ -175,8 +179,8 @@ public class ProfileActivity extends AppCompatActivity {
                                                         .addListenerForSingleValueEvent(new ValueEventListener() {
                                                             @Override
                                                             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                                for(DataSnapshot snapshot1 : snapshot.getChildren()){
-                                                                    snapshot1.getRef().child("followers").setValue(followers-1);
+                                                                for (DataSnapshot snapshot1 : snapshot.getChildren()) {
+                                                                    snapshot1.getRef().child("followers").setValue(followers - 1);
                                                                 }
                                                             }
 
@@ -256,8 +260,8 @@ public class ProfileActivity extends AppCompatActivity {
                         .addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                for(DataSnapshot snapshot1 : snapshot.getChildren()){
-                                    snapshot1.getRef().child("followers").setValue(followers+1);
+                                for (DataSnapshot snapshot1 : snapshot.getChildren()) {
+                                    snapshot1.getRef().child("followers").setValue(followers + 1);
                                 }
                             }
 
@@ -272,7 +276,7 @@ public class ProfileActivity extends AppCompatActivity {
         });
     }
 
-    private void read1(String username){
+    private void read1(String username) {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference databaseReference = database.getReference().child("Images")
                 .child(username);
@@ -316,7 +320,22 @@ public class ProfileActivity extends AppCompatActivity {
                         long followings = dataSnapshot.child("following").getValue(Integer.class);
                         String url = dataSnapshot.child("profileImage").getValue(String.class);
                         String bio = dataSnapshot.child("Bio").getValue(String.class);
+                        String website = dataSnapshot.child("Website").getValue(String.class);
+                        if (website.length() > 0) {
+                            textView7.setVisibility(View.VISIBLE);
+                            textView7.setText(website);
+                            textView7.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+                                    CustomTabsIntent customTabsIntent = builder.build();
+                                    customTabsIntent.launchUrl(ProfileActivity.this, Uri.parse(website));
+                                }
+                            });
 
+                        } else {
+                            textView7.setVisibility(View.GONE);
+                        }
                         textView2.setText(fullName);
                         textView3.setText("" + post);
                         textView4.setText("" + followers);
