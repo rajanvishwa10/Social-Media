@@ -61,6 +61,7 @@ public class HomePageFragment extends Fragment {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             if(snapshot.exists()){
+                                imagelist.clear();
                                 for(DataSnapshot dataSnapshot : snapshot.getChildren()){
                                     followingUsername = dataSnapshot.child("followingUsername").getValue(String.class);
                                     DatabaseReference databaseReference = database.getReference("Images").child(followingUsername);
@@ -68,13 +69,15 @@ public class HomePageFragment extends Fragment {
                                         @Override
                                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                                             if(snapshot.exists()){
-                                                imagelist.clear();
+//
                                                 for(DataSnapshot dataSnapshot1 : snapshot.getChildren()){
                                                     mainpageImagelist mainpageImagelist = dataSnapshot1.getValue(mainpageImagelist.class);
                                                     imagelist.add(mainpageImagelist);
+
                                                 }
                                                 imageAdapter = new MainpageImageAdapter(getContext(), imagelist);
                                                 recyclerView.setAdapter(imageAdapter);
+                                                imageAdapter.notifyDataSetChanged();
                                             }
                                         }
 

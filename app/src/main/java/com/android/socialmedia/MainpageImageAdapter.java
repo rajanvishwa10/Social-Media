@@ -72,11 +72,11 @@ public class MainpageImageAdapter extends RecyclerView.Adapter<MainpageImageAdap
             e.printStackTrace();
         }
 
-        if(caption.length() > 0){
+        if (caption.length() > 0) {
             holder.linearLayout3.setVisibility(View.VISIBLE);
             holder.caption.setText(Html.fromHtml("<medium><font color='black'>" + username + " : " + "</font></medium>"
                     + caption));
-        }else{
+        } else {
             holder.linearLayout3.setVisibility(View.GONE);
         }
 
@@ -193,27 +193,26 @@ public class MainpageImageAdapter extends RecyclerView.Adapter<MainpageImageAdap
         });
         Glide.with(context).load(comment.getImage()).into(holder.imageView);
 
-
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("Users");
-        Query query = databaseReference.orderByChild("Username").equalTo(comment.getUsername());
+        Query query = databaseReference.orderByChild("Username").equalTo(username);
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        if (url.length() > 0) {
+                            Glide.with(context).load(dataSnapshot.child("profileImage").
+                                    getValue(String.class)).into(holder.circleImageView);
+                            Glide.with(context).load(dataSnapshot.child("profileImage").
+                                    getValue(String.class)).into(holder.circleImageViewDp);
 
-                        try {
-                            if (url.isEmpty()) {
-                                holder.circleImageViewDp.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_baseline_person_24));
-                            } else {
-                                Glide.with(context).load(dataSnapshot.child("profileImage").
-                                        getValue(String.class)).into(holder.circleImageView);
-                                Glide.with(context).load(dataSnapshot.child("profileImage").
-                                        getValue(String.class)).into(holder.circleImageViewDp);
-                            }
-                        } catch (NullPointerException e) {
+                        } else {
+                            holder.circleImageViewDp.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_baseline_person_24));
                         }
+
                     }
+                } else {
+                    System.out.println(false);
                 }
             }
 
