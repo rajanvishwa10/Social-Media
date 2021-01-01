@@ -152,7 +152,7 @@ public class UploadImageActivity extends AppCompatActivity {
             }
         });
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-        databaseReference.child("Images").child(username).
+        databaseReference.child("Images").
                 orderByChild("Image").equalTo(Image).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -217,7 +217,7 @@ public class UploadImageActivity extends AppCompatActivity {
 
     private void read2(String username) {
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-        databaseReference.child("Images").child(username).
+        databaseReference.child("Images").
                 orderByChild("Image").equalTo(Image).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -305,7 +305,7 @@ public class UploadImageActivity extends AppCompatActivity {
         button.setVisibility(View.GONE);
         button2.setVisibility(View.VISIBLE);
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-        databaseReference.child("Images").child(username).
+        databaseReference.child("Images").
                 orderByChild("Image").equalTo(Image).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -330,7 +330,7 @@ public class UploadImageActivity extends AppCompatActivity {
         button.setVisibility(View.VISIBLE);
         button2.setVisibility(View.GONE);
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-        databaseReference.child("Images").child(username).
+        databaseReference.child("Images").
                 orderByChild("Image").equalTo(Image).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -347,7 +347,7 @@ public class UploadImageActivity extends AppCompatActivity {
         });
 
         DatabaseReference databaseReference1 = FirebaseDatabase.getInstance().getReference();
-        databaseReference1.child("Images").child(username).
+        databaseReference1.child("Images").
                 orderByChild("Image").equalTo(Image).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
