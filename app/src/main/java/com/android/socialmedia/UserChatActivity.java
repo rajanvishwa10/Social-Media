@@ -56,7 +56,6 @@ public class UserChatActivity extends AppCompatActivity {
         setContentView(R.layout.activity_user_chat);
 
         recyclerView = findViewById(R.id.recycler);
-        recyclerView.setHasFixedSize(true);
         chats = new ArrayList<>();
         circleImageView = findViewById(R.id.circleImageView);
 
@@ -262,6 +261,7 @@ public class UserChatActivity extends AppCompatActivity {
                         }
                         messageAdapter = new MessageAdapter(UserChatActivity.this, chats);
                         recyclerView.setAdapter(messageAdapter);
+                        messageAdapter.notifyDataSetChanged();
                     }
                     //System.out.println("snap"+snapshot.getChildren());
 

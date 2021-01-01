@@ -3,6 +3,7 @@ package com.android.socialmedia;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,7 +31,6 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
     private final Context context;
     private final List<MessageUser> userList;
     String lastmess = "default";
-    int count;
 
     public MessageListAdapter(Context context, List<MessageUser> userList) {
         this.context = context;
@@ -77,6 +77,7 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
         reference.child("Messages").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                int count = 0;
                 for (DataSnapshot dataSnapshot1 : snapshot.getChildren()) {
                     Chats chat = dataSnapshot1.getValue(Chats.class);
                     SharedPreferences sharedPreferences = context.getSharedPreferences("username", Context.MODE_PRIVATE);
@@ -85,16 +86,28 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
                             chat.getReceiver().equals(currentUsername) && chat.getSender().equals(user.getId())) {
                         lastmess = chat.getMessage();
                         holder.textView2.setText(lastmess);
-                        if(!chat.isIsseen()){
-                            count++;
+                        if (!chat.getSender().equals(currentUsername)) {
+                            if (!chat.isIsseen()) {
+                                count++;
+                            }
                         }
-
                     }
                 }
-                System.out.println(count);
+                if (count > 0) {
+                    holder.textView2.setTypeface(holder.textView2.getTypeface(), Typeface.BOLD);
+                    holder.countTextView.setVisibility(View.VISIBLE);
+                    holder.countTextView.setText("" + count);
+                } else {
+                    holder.textView2.setTypeface(holder.textView2.getTypeface(), Typeface.NORMAL);
+                    holder.countTextView.setVisibility(View.GONE);
+                }
+
                 if ("default".equals(lastmess)) {
                     holder.textView2.setVisibility(View.GONE);
+                    holder.linearLayout.setVisibility(View.GONE);
                 } else {
+                    holder.textView2.setTypeface(holder.textView2.getTypeface(), Typeface.NORMAL);
+                    holder.linearLayout.setVisibility(View.VISIBLE);
                     holder.textView2.setVisibility(View.VISIBLE);
                     holder.textView2.setText(lastmess);
                 }
@@ -127,8 +140,18 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
         return userList.size();
     }
 
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return position;
+    }
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView textView, textView2;
+        TextView textView, textView2, countTextView;
         CircleImageView circleImageView;
         LinearLayout linearLayout;
 
@@ -136,6 +159,7 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
             super(itemView);
             textView = itemView.findViewById(R.id.username);
             textView2 = itemView.findViewById(R.id.fullname);
+            countTextView = itemView.findViewById(R.id.unseenCount);
             circleImageView = itemView.findViewById(R.id.profilepic);
             linearLayout = itemView.findViewById(R.id.linearLayout);
         }

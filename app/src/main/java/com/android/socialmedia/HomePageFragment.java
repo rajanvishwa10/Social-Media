@@ -15,23 +15,29 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.facebook.shimmer.Shimmer;
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class HomePageFragment extends Fragment {
-    String currentUsername,followingUsername;
+    String currentUsername, followingUsername;
     List<mainpageImagelist> imagelist;
     RecyclerView recyclerView;
     MainpageImageAdapter imageAdapter;
+    ShimmerFrameLayout shimmerFrameLayout;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -40,6 +46,8 @@ public class HomePageFragment extends Fragment {
         Toolbar toolbar = view.findViewById(R.id.toolbar);
         toolbar.setOnMenuItemClickListener(this::onOptionsItemSelected);
 
+        shimmerFrameLayout = view.findViewById(R.id.shimmerFrameLayout);
+
         imagelist = new ArrayList<>();
         recyclerView = view.findViewById(R.id.recyclerView);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
@@ -47,56 +55,26 @@ public class HomePageFragment extends Fragment {
         layoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(layoutManager);
 
-
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("Users");
-        myRef.addValueEventListener(new ValueEventListener() {
-
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Images");
+        //Query query = databaseReference.orderByChild("username").equalTo(followingUsername);
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    currentUsername = dataSnapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Username").getValue(String.class);
-                    DatabaseReference databaseReference = database.getReference(currentUsername).child("following");
-                    databaseReference.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            if(snapshot.exists()){
-                                imagelist.clear();
-                                for(DataSnapshot dataSnapshot : snapshot.getChildren()){
-                                    followingUsername = dataSnapshot.child("followingUsername").getValue(String.class);
-                                    DatabaseReference databaseReference = database.getReference("Images").child(followingUsername);
-                                    databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                            if(snapshot.exists()){
-//
-                                                for(DataSnapshot dataSnapshot1 : snapshot.getChildren()){
-                                                    mainpageImagelist mainpageImagelist = dataSnapshot1.getValue(mainpageImagelist.class);
-                                                    imagelist.add(mainpageImagelist);
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                                                }
-                                                imageAdapter = new MainpageImageAdapter(getContext(), imagelist);
-                                                recyclerView.setAdapter(imageAdapter);
-                                                imageAdapter.notifyDataSetChanged();
-                                            }
-                                        }
+                if (snapshot.exists()) {
+                    for (DataSnapshot dataSnapshot1 : snapshot.getChildren()) {
+                        mainpageImagelist mainpageImagelist = dataSnapshot1.getValue(mainpageImagelist.class);
+                        imagelist.add(mainpageImagelist);
 
-                                        @Override
-                                        public void onCancelled(@NonNull DatabaseError error) {
-
-                                        }
-                                    });
-                                }
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-
-                        }
-                    });
-
+                    }
+                    shimmerFrameLayout.stopShimmer();
+                    shimmerFrameLayout.setVisibility(View.GONE);
+                    recyclerView.setVisibility(View.VISIBLE);
+                    imageAdapter = new MainpageImageAdapter(getContext(), imagelist);
+                    recyclerView.setAdapter(imageAdapter);
+                    imageAdapter.notifyDataSetChanged();
                 }
+
             }
 
             @Override
@@ -104,7 +82,6 @@ public class HomePageFragment extends Fragment {
 
             }
         });
-
 
         return view;
     }
@@ -118,10 +95,22 @@ public class HomePageFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
-        if(id == R.id.send){
-            Intent intent = new Intent(getContext(),MessageActivity.class);
+        if (id == R.id.send) {
+            Intent intent = new Intent(getContext(), MessageActivity.class);
             startActivity(intent);
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        shimmerFrameLayout.startShimmer();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        shimmerFrameLayout.stopShimmer();
     }
 }

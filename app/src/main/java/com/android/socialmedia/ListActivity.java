@@ -75,7 +75,7 @@ public class ListActivity extends AppCompatActivity {
         } else if (data.equals("Likes")) {
             String image = getIntent().getStringExtra("image");
             DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-            databaseReference.child("Images").child(username).
+            databaseReference.child("Images").
                     orderByChild("Image").equalTo(image).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {

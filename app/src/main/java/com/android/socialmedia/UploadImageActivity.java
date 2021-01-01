@@ -21,6 +21,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ablanco.zoomy.Zoomy;
 import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -82,6 +83,7 @@ public class UploadImageActivity extends AppCompatActivity {
         });
 
         ImageView imageView = findViewById(R.id.imageView);
+
         circleImageView = findViewById(R.id.profilepic);
         textView = findViewById(R.id.username);
         textView2 = findViewById(R.id.username2);
@@ -104,6 +106,8 @@ public class UploadImageActivity extends AppCompatActivity {
         String caption = getIntent().getStringExtra("caption");
 
         Glide.with(this).load(Image).into(imageView);
+        Zoomy.Builder builder = new Zoomy.Builder(this).target(imageView);
+        builder.register();
         textView1.setText(caption);
         String date = getIntent().getStringExtra("date");
         String[] dateSplit = date.split("\\s+");

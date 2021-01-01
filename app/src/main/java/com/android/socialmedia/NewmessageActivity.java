@@ -40,7 +40,6 @@ public class NewmessageActivity extends AppCompatActivity {
         userList = new ArrayList<>();
         recyclerView = findViewById(R.id.recyclerView);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
-        recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(layoutManager);
         textView = findViewById(R.id.message);
         editText = findViewById(R.id.searchEditText);

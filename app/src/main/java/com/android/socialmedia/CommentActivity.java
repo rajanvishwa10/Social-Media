@@ -116,12 +116,16 @@ public class CommentActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 comment = editText.getText().toString().trim();
-                setComment(comment);
+                //
+                if(comment.length()>0){
+                    setComment(comment.trim());
+                }
+                System.out.println(comment);
             }
         });
 
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-        databaseReference.child("Images").child(username).
+        databaseReference.child("Images").
                 orderByChild("Image").equalTo(image).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -159,7 +163,7 @@ public class CommentActivity extends AppCompatActivity {
         final String formattedDate = df.format(c);
 
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-        databaseReference.child("Images").child(username).
+        databaseReference.child("Images").
                 orderByChild("Image").equalTo(image).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {

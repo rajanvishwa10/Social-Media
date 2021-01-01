@@ -1,5 +1,6 @@
 package com.android.socialmedia;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.text.Html;
@@ -12,8 +13,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.ablanco.zoomy.Zoomy;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -41,6 +44,7 @@ public class MainpageImageAdapter extends RecyclerView.Adapter<MainpageImageAdap
     int likes;
     String url;
 
+
     public MainpageImageAdapter(Context context, List<mainpageImagelist> userList) {
         this.context = context;
         this.userList = userList;
@@ -60,6 +64,48 @@ public class MainpageImageAdapter extends RecyclerView.Adapter<MainpageImageAdap
         String image = comment.getImage();
         String caption = comment.getCaption();
         String date = comment.getData();
+
+        DatabaseReference myRef2 = FirebaseDatabase.getInstance().getReference("Users");
+        myRef2.addValueEventListener(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    currentUsername = dataSnapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Username").getValue(String.class);
+                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(currentUsername).child("following");
+                    databaseReference.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if (snapshot.exists()) {
+                                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                                    String followingUsername = dataSnapshot.child("followingUsername").getValue(String.class);
+                                    if (followingUsername.equals(comment.getUsername())) {
+                                        holder.constraintLayout.setVisibility(View.VISIBLE);
+                                        break;
+                                    } else if (comment.getUsername().equals(currentUsername)) {
+                                        holder.constraintLayout.setVisibility(View.VISIBLE);
+                                    } else {
+                                        holder.constraintLayout.setVisibility(View.GONE);
+                                    }
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
 
         String[] dateSplit = date.split("\\s+");
         try {
@@ -111,7 +157,7 @@ public class MainpageImageAdapter extends RecyclerView.Adapter<MainpageImageAdap
         });
 
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
-        reference.child("Images").child(username).
+        reference.child("Images").
                 orderByChild("Image").equalTo(image).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -122,12 +168,17 @@ public class MainpageImageAdapter extends RecyclerView.Adapter<MainpageImageAdap
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             if (snapshot.exists()) {
-                                holder.commentlinearlayout.setVisibility(View.VISIBLE);
                                 for (DataSnapshot snapshot1 : snapshot.getChildren()) {
                                     String commenter = snapshot1.child("commenter").getValue(String.class);
                                     String comment = snapshot1.child("comment").getValue(String.class);
-                                    holder.commenterUsername.setText(Html.fromHtml("<medium><font color='black'>" + commenter + " : " + "</font></medium>"
-                                            + comment));
+                                    if (comment.length() > 0) {
+                                        holder.commentlinearlayout.setVisibility(View.VISIBLE);
+                                        holder.commenterUsername.setText(Html.fromHtml("<medium><font color='black'>" + commenter + " : " + "</font></medium>"
+                                                + comment));
+                                    } else {
+                                        holder.commentlinearlayout.setVisibility(View.GONE);
+                                    }
+
                                     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("Users");
                                     Query query = databaseReference.orderByChild("Username").equalTo(commenter);
                                     query.addValueEventListener(new ValueEventListener() {
@@ -180,7 +231,6 @@ public class MainpageImageAdapter extends RecyclerView.Adapter<MainpageImageAdap
         });
 
         holder.textView.setText(username);
-        //holder.textView2.setText(comment.getLikes() + " Likes");
         holder.textView2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -192,6 +242,8 @@ public class MainpageImageAdapter extends RecyclerView.Adapter<MainpageImageAdap
             }
         });
         Glide.with(context).load(comment.getImage()).into(holder.imageView);
+        Zoomy.Builder builder = new Zoomy.Builder((Activity) holder.imageView.getContext()).target(holder.imageView);
+        builder.register();
 
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("Users");
         Query query = databaseReference.orderByChild("Username").equalTo(username);
@@ -226,15 +278,16 @@ public class MainpageImageAdapter extends RecyclerView.Adapter<MainpageImageAdap
             @Override
             public void onClick(View v) {
                 userList.clear();
-                Intent intent = new Intent(context, ProfileActivity.class);
+                Intent intent = new Intent(context, ProfileActivity2.class);
                 intent.putExtra("username", comment.getUsername());
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intent);
+                ((Activity) context).finish();
             }
         });
 
         DatabaseReference databaseReference2 = FirebaseDatabase.getInstance().getReference();
-        databaseReference2.child("Images").child(username).
+        databaseReference2.child("Images").
                 orderByChild("Image").equalTo(image).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -254,7 +307,7 @@ public class MainpageImageAdapter extends RecyclerView.Adapter<MainpageImageAdap
                                                 holder.like.setVisibility(View.VISIBLE);
                                                 holder.unlike.setVisibility(View.GONE);
                                                 DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-                                                databaseReference.child("Images").child(username).
+                                                databaseReference.child("Images").
                                                         orderByChild("Image").equalTo(image).addListenerForSingleValueEvent(new ValueEventListener() {
                                                     @Override
                                                     public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -266,7 +319,7 @@ public class MainpageImageAdapter extends RecyclerView.Adapter<MainpageImageAdap
                                                                         @Override
                                                                         public void onSuccess(Void aVoid) {
                                                                             DatabaseReference databaseReference1 = FirebaseDatabase.getInstance().getReference();
-                                                                            databaseReference1.child("Images").child(username).
+                                                                            databaseReference1.child("Images").
                                                                                     orderByChild("Image").equalTo(image).addListenerForSingleValueEvent(new ValueEventListener() {
                                                                                 @Override
                                                                                 public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -345,7 +398,7 @@ public class MainpageImageAdapter extends RecyclerView.Adapter<MainpageImageAdap
                 holder.like.setVisibility(View.GONE);
                 holder.unlike.setVisibility(View.VISIBLE);
                 DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-                databaseReference.child("Images").child(username).
+                databaseReference.child("Images").
                         orderByChild("Image").equalTo(image).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -403,6 +456,7 @@ public class MainpageImageAdapter extends RecyclerView.Adapter<MainpageImageAdap
         CircleImageView circleImageView, commenterProfilepic, circleImageViewDp;
         LinearLayout linearLayout, commentlinearlayout, linearLayout3;
         ImageView imageView;
+        ConstraintLayout constraintLayout;
         ImageButton like, unlike, comment;
 
         public ViewHolder(@NonNull View itemView) {
@@ -412,6 +466,7 @@ public class MainpageImageAdapter extends RecyclerView.Adapter<MainpageImageAdap
             circleImageView = itemView.findViewById(R.id.profilepic);
             linearLayout = itemView.findViewById(R.id.linearLayout);
             linearLayout3 = itemView.findViewById(R.id.linearLayout3);
+            constraintLayout = itemView.findViewById(R.id.imageContainer);
             imageView = itemView.findViewById(R.id.imageView);
             like = itemView.findViewById(R.id.like);
             comment = itemView.findViewById(R.id.comment);

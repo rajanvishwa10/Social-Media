@@ -1,11 +1,5 @@
 package com.android.socialmedia;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.browser.customtabs.CustomTabsIntent;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -16,6 +10,12 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -25,8 +25,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-
-import org.w3c.dom.Text;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -40,7 +38,7 @@ import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class ProfileActivity extends AppCompatActivity {
+public class ProfileActivity2 extends AppCompatActivity {
 
     TextView textView, textView2, textView3, textView4, textView5, textView6, textView7;
     CircleImageView circleImageView;
@@ -135,7 +133,7 @@ public class ProfileActivity extends AppCompatActivity {
                                             public void onClick(View v) {
                                                 button.setVisibility(View.VISIBLE);
                                                 button2.setVisibility(View.GONE);
-                                                Toast.makeText(ProfileActivity.this, "Unfollow", Toast.LENGTH_SHORT).show();
+                                                Toast.makeText(ProfileActivity2.this, "Unfollow", Toast.LENGTH_SHORT).show();
                                                 DatabaseReference ref = FirebaseDatabase.getInstance().getReference()
                                                         .child(userName)
                                                         .child("following");
@@ -205,7 +203,7 @@ public class ProfileActivity extends AppCompatActivity {
                         }
                     });
                 } else {
-                    Toast.makeText(ProfileActivity.this, "No data", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ProfileActivity2.this, "No data", Toast.LENGTH_SHORT).show();
                 }
 
             }
@@ -218,7 +216,7 @@ public class ProfileActivity extends AppCompatActivity {
 
 
         imageList = new ArrayList<>();
-        layoutManager = new GridLayoutManager(ProfileActivity.this, 3);
+        layoutManager = new GridLayoutManager(ProfileActivity2.this, 3);
 
         recyclerView.setLayoutManager(layoutManager);
 
@@ -241,7 +239,7 @@ public class ProfileActivity extends AppCompatActivity {
                 ref.updateChildren(updates).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        Toast.makeText(ProfileActivity.this, "Following", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ProfileActivity2.this, "Following", Toast.LENGTH_SHORT).show();
                     }
                 });
 
@@ -294,7 +292,7 @@ public class ProfileActivity extends AppCompatActivity {
                         Collections.reverse(imageList);
                         System.out.println("Images = " + dataSnapshot.child("Image").getValue(String.class));
                     }
-                    galleryImageAdapter = new GalleryImageAdapter(ProfileActivity.this, imageList, username);
+                    galleryImageAdapter = new GalleryImageAdapter(ProfileActivity2.this, imageList, username);
                     recyclerView.setAdapter(galleryImageAdapter);
                 } else {
                     System.out.println(false);
@@ -345,7 +343,7 @@ public class ProfileActivity extends AppCompatActivity {
                                 public void onClick(View v) {
                                     CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
                                     CustomTabsIntent customTabsIntent = builder.build();
-                                    customTabsIntent.launchUrl(ProfileActivity.this, Uri.parse(website));
+                                    customTabsIntent.launchUrl(ProfileActivity2.this, Uri.parse(website));
                                 }
                             });
 
@@ -378,7 +376,8 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void back() {
-        onBackPressed();
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        startActivity(intent);
         finish();
     }
 

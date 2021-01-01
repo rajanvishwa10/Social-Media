@@ -9,19 +9,19 @@
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
-        app:menu="@menu/menu_send"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize">
+        android:layout_height="?attr/actionBarSize"
+        app:menu="@menu/menu_send">
 
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingStart="20sp"
-            android:gravity="center"
             android:layout_centerInParent="true"
-            android:text="Social Network"
             android:fontFamily="@font/font"
+            android:gravity="center"
+            android:paddingStart="20sp"
+            android:text="Social Network"
             android:textAllCaps="true"
             android:textColor="@color/black"
             android:textSize="17sp"
@@ -33,10 +33,48 @@
 
     </androidx.appcompat.widget.Toolbar>
 
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:id="@+id/shimmerFrameLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/toolbar"
+        android:layout_gravity="center"
+        android:orientation="vertical">
+
+        <!-- Adding 15 rows of placeholders -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <include layout="@layout/shimmer_mainpage_image" />
+
+            <include layout="@layout/shimmer_mainpage_image" />
+
+            <include layout="@layout/shimmer_mainpage_image" />
+
+            <include layout="@layout/shimmer_mainpage_image" />
+
+            <include layout="@layout/shimmer_mainpage_image" />
+
+            <include layout="@layout/shimmer_mainpage_image" />
+
+            <include layout="@layout/shimmer_mainpage_image" />
+
+            <include layout="@layout/shimmer_mainpage_image" />
+
+            <include layout="@layout/shimmer_mainpage_image" />
+
+            <include layout="@layout/shimmer_mainpage_image" />
+
+        </LinearLayout>
+    </com.facebook.shimmer.ShimmerFrameLayout>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/toolbar" />
+        android:layout_below="@+id/toolbar"
+        android:visibility="gone"/>
 
 </RelativeLayout>

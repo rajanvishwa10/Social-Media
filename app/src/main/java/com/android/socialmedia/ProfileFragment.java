@@ -46,6 +46,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -69,6 +70,7 @@ public class ProfileFragment extends Fragment {
     TextView textView, textView2, textView3, textView4, textView5, textView6, textView7;
     Uri uri;
     CircleImageView imageView;
+    ImageView verifiedImage;
     Bitmap bitmap;
     List<ImageList> imageList;
     Button editProfile;
@@ -87,6 +89,8 @@ public class ProfileFragment extends Fragment {
         imageList = new ArrayList<>();
         recyclerView = view.findViewById(R.id.recyclerView);
         layoutManager = new GridLayoutManager(getContext(), 3);
+
+        verifiedImage = view.findViewById(R.id.verified);
 
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(layoutManager);
@@ -292,11 +296,12 @@ public class ProfileFragment extends Fragment {
                     String url = dataSnapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("profileImage").getValue(String.class);
                     String bio = dataSnapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Bio").getValue(String.class);
                     String website = dataSnapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Website").getValue(String.class);
+                    boolean verified = dataSnapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("verified").getValue(Boolean.class);
 
                     final FirebaseDatabase database = FirebaseDatabase.getInstance();
-                    DatabaseReference myRef = database.getReference("Images")
-                            .child(username);
-                    myRef.addValueEventListener(new ValueEventListener() {
+                    DatabaseReference myRef = database.getReference("Images");
+                    Query query = myRef.orderByChild("username").equalTo(username);
+                    query.addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             if (snapshot.exists()) {
@@ -344,6 +349,19 @@ public class ProfileFragment extends Fragment {
                         textView7.setVisibility(View.GONE);
                     }
 
+                    if (verified) {
+                        verifiedImage.setVisibility(View.VISIBLE);
+                        verifiedImage.setLongClickable(true);
+                        verifiedImage.setOnLongClickListener(new View.OnLongClickListener() {
+                            @Override
+                            public boolean onLongClick(View v) {
+                                Toast.makeText(getContext(), "Verified", Toast.LENGTH_SHORT).show();
+                                return true;
+                            }
+                        });
+                    } else {
+                        verifiedImage.setVisibility(View.GONE);
+                    }
 
                     try {
                         if (url.isEmpty()) {

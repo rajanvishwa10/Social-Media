@@ -1,19 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ProfileFragment">
+    tools:context=".ProfileActivity2">
+
+    <ImageButton
+        android:id="@+id/back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:background="@android:color/transparent"
+        android:onClick="back"
+        android:src="@drawable/ic_baseline_keyboard_backspace_24" />
 
     <TextView
         android:id="@+id/username"
-        android:layout_marginTop="10dp"
-        android:layout_marginStart="10dp"
-        android:textStyle="bold"
-        android:textSize="16sp"
-        android:textColor="@color/black"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_toEndOf="@+id/back"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        android:textStyle="bold" />
 
     <ImageView
         android:id="@+id/verified"
@@ -27,22 +39,19 @@
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/image"
-        android:layout_width="100dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:layout_below="@+id/username"
-        android:src="@drawable/ic_baseline_person_24"
-        android:layout_height="100dp"
         android:layout_marginStart="10dp"
-        android:layout_marginTop="20dp" />
+        android:layout_marginTop="20dp"
+        android:src="@drawable/ic_baseline_person_24" />
 
     <LinearLayout
-        android:id="@+id/linear"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignTop="@+id/image"
         android:layout_alignBottom="@+id/image"
-        android:layout_alignParentEnd="true"
         android:layout_marginHorizontal="10dp"
-        android:layout_marginEnd="9dp"
         android:layout_toEndOf="@+id/image"
         android:orientation="horizontal">
 
@@ -54,8 +63,7 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center">
+                android:layout_height="match_parent">
 
                 <TextView
                     android:id="@+id/post"
@@ -87,8 +95,7 @@
             <RelativeLayout
                 android:id="@+id/followerRelative"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center">
+                android:layout_height="match_parent">
 
                 <TextView
                     android:id="@+id/followers"
@@ -118,8 +125,7 @@
             <RelativeLayout
                 android:id="@+id/followingRelative"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center">
+                android:layout_height="match_parent">
 
                 <TextView
                     android:id="@+id/following"
@@ -146,21 +152,21 @@
         android:id="@+id/name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textStyle="bold"
         android:layout_below="@+id/image"
-        android:layout_marginTop="10dp"
         android:layout_marginStart="10dp"
-        android:textSize="15sp"
-        android:textColor="@color/black" />
+        android:layout_marginTop="10dp"
+        android:textColor="@color/black"
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/bio"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/name"
-        android:layout_marginTop="5dp"
         android:layout_marginStart="10dp"
-        android:textColor="@color/black" />
+        android:layout_marginTop="5dp"
+        android:textColor="@color/black"
+        android:textSize="15sp" />
 
     <TextView
         android:id="@+id/website"
@@ -171,21 +177,36 @@
         android:layout_marginTop="5dp"
         android:textColor="@color/black" />
 
-    <Button
-        android:id="@+id/editprofile"
+    <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Edit Profile"
-        android:background="@color/white"
+        android:layout_below="@id/website"
         android:layout_marginHorizontal="10dp"
         android:layout_marginTop="5dp"
-        android:layout_below="@+id/website"/>
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/follow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/purple_200"
+            android:text="Follow" />
+
+        <Button
+            android:id="@+id/unfollow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:text="UnFollow"
+            android:visibility="gone" />
+    </LinearLayout>
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/editprofile"
-        android:layout_marginTop="5dp"/>
-
+        android:layout_below="@+id/linearLayout"
+        android:layout_marginTop="5dp" />
 </RelativeLayout>
