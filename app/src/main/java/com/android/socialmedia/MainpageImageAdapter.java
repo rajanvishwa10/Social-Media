@@ -106,9 +106,8 @@ public class MainpageImageAdapter extends RecyclerView.Adapter<MainpageImageAdap
             }
         });
 
-
-        String[] dateSplit = date.split("\\s+");
         try {
+            String[] dateSplit = date.split("\\s+");
             SimpleDateFormat spf = new SimpleDateFormat("dd-MM-yyyy");
             Date newDate = spf.parse(dateSplit[0]);
             spf = new SimpleDateFormat("dd, MMM");
@@ -252,14 +251,20 @@ public class MainpageImageAdapter extends RecyclerView.Adapter<MainpageImageAdap
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        if (url.length() > 0) {
-                            Glide.with(context).load(dataSnapshot.child("profileImage").
-                                    getValue(String.class)).into(holder.circleImageView);
-                            Glide.with(context).load(dataSnapshot.child("profileImage").
-                                    getValue(String.class)).into(holder.circleImageViewDp);
+                        try {
+                            if (url.length() > 0) {
+                                Glide.with(context).load(dataSnapshot.child("profileImage").
+                                        getValue(String.class)).into(holder.circleImageView);
+                                Glide.with(context).load(dataSnapshot.child("profileImage").
+                                        getValue(String.class)).into(holder.circleImageViewDp);
 
-                        } else {
+                            } else {
+                                holder.circleImageViewDp.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_baseline_person_24));
+                                holder.circleImageView.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_baseline_person_24));
+                            }
+                        } catch (Exception e) {
                             holder.circleImageViewDp.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_baseline_person_24));
+                            holder.circleImageView.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_baseline_person_24));
                         }
 
                     }

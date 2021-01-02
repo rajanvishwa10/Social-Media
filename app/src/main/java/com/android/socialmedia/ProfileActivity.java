@@ -337,21 +337,23 @@ public class ProfileActivity extends AppCompatActivity {
                         }else{
                             imageView.setVisibility(View.GONE);
                         }
-                        if (website.length() > 0) {
-                            textView7.setVisibility(View.VISIBLE);
-                            textView7.setText(website);
-                            textView7.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
-                                    CustomTabsIntent customTabsIntent = builder.build();
-                                    customTabsIntent.launchUrl(ProfileActivity.this, Uri.parse(website));
-                                }
-                            });
+                        try {
+                            if (website.length() > 0) {
+                                textView7.setVisibility(View.VISIBLE);
+                                textView7.setText(website);
+                                textView7.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+                                        CustomTabsIntent customTabsIntent = builder.build();
+                                        customTabsIntent.launchUrl(ProfileActivity.this, Uri.parse(website));
+                                    }
+                                });
 
-                        } else {
-                            textView7.setVisibility(View.GONE);
-                        }
+                            } else {
+                                textView7.setVisibility(View.GONE);
+                            }
+                        }catch (Exception e){}
                         textView2.setText(fullName);
                         textView3.setText("" + post);
                         textView4.setText("" + followers);
