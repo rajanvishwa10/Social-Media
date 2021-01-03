@@ -39,7 +39,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class CommentActivity extends AppCompatActivity {
 
-    String caption, username, image, profilepic, comment, currentUsername;
+    String caption, username, image, profilepic, comment, currentUsername, imagedate;
     CircleImageView circleImageView;
     Toolbar toolbar;
     TextView textView, textView2;
@@ -48,16 +48,20 @@ public class CommentActivity extends AppCompatActivity {
     List<Comment> commentList;
     RecyclerView recyclerView;
     CommentAdapter commentAdapter;
+    NotificationClass notificationClass;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_comment);
 
+        notificationClass = new NotificationClass();
+
         caption = getIntent().getStringExtra("caption");
         username = getIntent().getStringExtra("username");
         image = getIntent().getStringExtra("image");
         profilepic = getIntent().getStringExtra("profilepic");
+        imagedate = getIntent().getStringExtra("imagedate");
 
         circleImageView = findViewById(R.id.profilepic);
         toolbar = findViewById(R.id.toolbar5);
@@ -76,7 +80,6 @@ public class CommentActivity extends AppCompatActivity {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setReverseLayout(true);
         layoutManager.setStackFromEnd(true);
-        recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(layoutManager);
 
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -117,10 +120,9 @@ public class CommentActivity extends AppCompatActivity {
             public void onClick(View v) {
                 comment = editText.getText().toString().trim();
                 //
-                if(comment.length()>0){
-                    setComment(comment.trim());
+                if (comment.length() > 0) {
+                    setComment(comment.trim(), imagedate);
                 }
-                System.out.println(comment);
             }
         });
 
@@ -143,6 +145,7 @@ public class CommentActivity extends AppCompatActivity {
                                 recyclerView.setAdapter(commentAdapter);
                             }
                         }
+
                         @Override
                         public void onCancelled(@NonNull DatabaseError error) {
 
@@ -150,6 +153,7 @@ public class CommentActivity extends AppCompatActivity {
                     });
                 }
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
@@ -157,7 +161,7 @@ public class CommentActivity extends AppCompatActivity {
         });
     }
 
-    private void setComment(String comment) {
+    private void setComment(String comment, String imagedate) {
         final Date c = Calendar.getInstance().getTime();
         SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.getDefault());
         final String formattedDate = df.format(c);
@@ -176,6 +180,9 @@ public class CommentActivity extends AppCompatActivity {
                                 @Override
                                 public void onSuccess(Void aVoid) {
                                     editText.setText(null);
+                                    if (!username.equals(currentUsername)) {
+                                        notificationClass.setNotification(username, currentUsername, currentUsername + " commented : " + comment, image, caption, imagedate);
+                                    }
                                 }
                             });
                 }

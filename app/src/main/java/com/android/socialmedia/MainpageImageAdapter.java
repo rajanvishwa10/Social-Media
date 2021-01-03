@@ -42,8 +42,8 @@ public class MainpageImageAdapter extends RecyclerView.Adapter<MainpageImageAdap
     private final List<mainpageImagelist> userList;
     String currentUsername;
     int likes;
-    String url;
-
+    String url, date;
+    NotificationClass notificationClass;
 
     public MainpageImageAdapter(Context context, List<mainpageImagelist> userList) {
         this.context = context;
@@ -59,11 +59,12 @@ public class MainpageImageAdapter extends RecyclerView.Adapter<MainpageImageAdap
 
     @Override
     public void onBindViewHolder(@NonNull MainpageImageAdapter.ViewHolder holder, int position) {
+        notificationClass = new NotificationClass();
         mainpageImagelist comment = userList.get(position);
         String username = comment.getUsername();
         String image = comment.getImage();
         String caption = comment.getCaption();
-        String date = comment.getData();
+        date = comment.getData();
 
         DatabaseReference myRef2 = FirebaseDatabase.getInstance().getReference("Users");
         myRef2.addValueEventListener(new ValueEventListener() {
@@ -125,17 +126,6 @@ public class MainpageImageAdapter extends RecyclerView.Adapter<MainpageImageAdap
             holder.linearLayout3.setVisibility(View.GONE);
         }
 
-        holder.linearLayout3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(context, CommentActivity.class);
-                intent.putExtra("username", username);
-                intent.putExtra("image", image);
-                intent.putExtra("caption", caption);
-                intent.putExtra("profilepic", url);
-                context.startActivity(intent);
-            }
-        });
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("Users");
@@ -154,6 +144,7 @@ public class MainpageImageAdapter extends RecyclerView.Adapter<MainpageImageAdap
 
             }
         });
+
 
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
         reference.child("Images").
@@ -185,8 +176,9 @@ public class MainpageImageAdapter extends RecyclerView.Adapter<MainpageImageAdap
                                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                                             if (snapshot.exists()) {
                                                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                                                    Glide.with(context).load(dataSnapshot.child("profileImage").
-                                                            getValue(String.class)).into(holder.commenterProfilepic);
+                                                    String profile = dataSnapshot.child("profileImage").
+                                                            getValue(String.class);
+                                                    Glide.with(context).load(profile).into(holder.commenterProfilepic);
                                                     holder.commentlinearlayout.setOnClickListener(new View.OnClickListener() {
                                                         @Override
                                                         public void onClick(View v) {
@@ -194,7 +186,8 @@ public class MainpageImageAdapter extends RecyclerView.Adapter<MainpageImageAdap
                                                             intent.putExtra("username", username);
                                                             intent.putExtra("image", image);
                                                             intent.putExtra("caption", caption);
-                                                            intent.putExtra("profilepic", url);
+                                                            intent.putExtra("profilepic", profile);
+                                                            intent.putExtra("imagedate",date);
                                                             context.startActivity(intent);
                                                         }
                                                     });
@@ -252,16 +245,23 @@ public class MainpageImageAdapter extends RecyclerView.Adapter<MainpageImageAdap
                 if (snapshot.exists()) {
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         try {
-                            if (url.length() > 0) {
-                                Glide.with(context).load(dataSnapshot.child("profileImage").
-                                        getValue(String.class)).into(holder.circleImageView);
-                                Glide.with(context).load(dataSnapshot.child("profileImage").
-                                        getValue(String.class)).into(holder.circleImageViewDp);
+                           String dp = dataSnapshot.child("profileImage").
+                                   getValue(String.class);
+                            Glide.with(context).load(dp).into(holder.circleImageView);
+                            Glide.with(context).load(dp).into(holder.circleImageViewDp);
+                            holder.linearLayout3.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Intent intent = new Intent(context, CommentActivity.class);
+                                    intent.putExtra("username", username);
+                                    intent.putExtra("image", image);
+                                    intent.putExtra("caption", caption);
+                                    intent.putExtra("profilepic", dp);
+                                    context.startActivity(intent);
+                                }
+                            });
 
-                            } else {
-                                holder.circleImageViewDp.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_baseline_person_24));
-                                holder.circleImageView.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_baseline_person_24));
-                            }
+
                         } catch (Exception e) {
                             holder.circleImageViewDp.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_baseline_person_24));
                             holder.circleImageView.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_baseline_person_24));
@@ -415,7 +415,14 @@ public class MainpageImageAdapter extends RecyclerView.Adapter<MainpageImageAdap
                             updates.put("like", likeCount + 1);
 
                             snapshot1.getRef().child("userLiked").child(currentUsername).setValue(updates)
-                            ;
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            if(!username.equals(currentUsername)){
+                                                notificationClass.setNotification(username, currentUsername, "Liked by " + currentUsername, image, caption, date);
+                                            }
+                                        }
+                                    });
                         }
                     }
 

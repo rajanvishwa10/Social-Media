@@ -16,6 +16,11 @@
         android:title="Upload"/>
 
     <item
+        android:id="@+id/notification"
+        android:icon="@drawable/ic_baseline_notifications_24"
+        android:title="Notification"/>
+
+    <item
         android:id="@+id/Profile"
         android:icon="@drawable/ic_baseline_person_24"
         android:title="Profile"/>

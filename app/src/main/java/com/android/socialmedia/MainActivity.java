@@ -28,7 +28,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
-//    final Fragment fragment1 = new HomePageFragment();
+    //    final Fragment fragment1 = new HomePageFragment();
 //    final Fragment fragment2 = new SearchFragment();
 //    final Fragment fragment3 = new ImageFragment();
 //    final Fragment fragment4 = new ProfileFragment();
@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         ChipNavigationBar bottomNavigationView = findViewById(R.id.nav_view);
-        bottomNavigationView.setItemSelected(R.id.home,true);
+        bottomNavigationView.setItemSelected(R.id.home, true);
         getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment, new HomePageFragment()).commit();
         bottomNavigationView.setOnItemSelectedListener(new ChipNavigationBar.OnItemSelectedListener() {
             @Override
@@ -65,6 +65,10 @@ public class MainActivity extends AppCompatActivity {
 //                        fm.beginTransaction().hide(active).show(fragment3).commit();
 //                        active = fragment3;
                         fragment = new ImageFragment();
+                        break;
+
+                    case R.id.notification:
+                        fragment = new NotificationFragment();
                         break;
                     case R.id.Profile:
 //                        fm.beginTransaction().hide(active).show(fragment4).commit();

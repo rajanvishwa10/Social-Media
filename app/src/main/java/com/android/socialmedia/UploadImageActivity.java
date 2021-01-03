@@ -99,16 +99,28 @@ public class UploadImageActivity extends AppCompatActivity {
         TextView textView1 = findViewById(R.id.caption);
 
         Image = getIntent().getStringExtra("image");
-
         textView.setText(username);
-        textView2.setText(username + " : ");
 
         String caption = getIntent().getStringExtra("caption");
+        try {
+            if (caption.length() < 1) {
+                textView2.setVisibility(View.GONE);
+                textView1.setVisibility(View.GONE);
+            } else {
+                textView1.setVisibility(View.VISIBLE);
+                textView2.setVisibility(View.VISIBLE);
+                textView2.setText(username + " : ");
+                textView1.setText(caption);
+            }
+        } catch (Exception e) {
+            textView2.setVisibility(View.GONE);
+            textView1.setVisibility(View.GONE);
+        }
 
         Glide.with(this).load(Image).into(imageView);
         Zoomy.Builder builder = new Zoomy.Builder(this).target(imageView);
         builder.register();
-        textView1.setText(caption);
+
         String date = getIntent().getStringExtra("date");
         String[] dateSplit = date.split("\\s+");
         try {
@@ -223,7 +235,7 @@ public class UploadImageActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     likes = dataSnapshot.child("likes").getValue(Integer.class);
-                    textView4.setText(likes+" likes");
+                    textView4.setText(likes + " likes");
                     dataSnapshot.getRef().child("userLiked").addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
