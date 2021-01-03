@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import com.ablanco.zoomy.Zoomy;
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -44,14 +45,16 @@ public class UploadImageActivity extends AppCompatActivity {
     LinearLayout linearLayout;
     CircleImageView circleImageView, commenterProfilepic;
     ImageButton button, button2, button3;
-    String username, Image, currentUsername, url;
+    String username, Image, currentUsername, url, caption, date;
     int likes;
+    NotificationClass notificationClass;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image);
 
+        notificationClass = new NotificationClass();
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -101,7 +104,7 @@ public class UploadImageActivity extends AppCompatActivity {
         Image = getIntent().getStringExtra("image");
         textView.setText(username);
 
-        String caption = getIntent().getStringExtra("caption");
+        caption = getIntent().getStringExtra("caption");
         try {
             if (caption.length() < 1) {
                 textView2.setVisibility(View.GONE);
@@ -121,7 +124,7 @@ public class UploadImageActivity extends AppCompatActivity {
         Zoomy.Builder builder = new Zoomy.Builder(this).target(imageView);
         builder.register();
 
-        String date = getIntent().getStringExtra("date");
+        date = getIntent().getStringExtra("date");
         String[] dateSplit = date.split("\\s+");
         try {
             SimpleDateFormat spf = new SimpleDateFormat("dd-MM-yyyy");
@@ -327,7 +330,15 @@ public class UploadImageActivity extends AppCompatActivity {
                     Map<String, Object> updates = new HashMap<String, Object>();
                     updates.put("likerUsername", currentUsername);
                     updates.put("like", like);
-                    snapshot1.getRef().child("userLiked").child(currentUsername).setValue(updates);
+                    snapshot1.getRef().child("userLiked").child(currentUsername).setValue(updates)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    if (!username.equals(currentUsername)) {
+                                        notificationClass.setNotification(username, currentUsername, currentUsername + " liked your photo", Image, caption, date);
+                                    }
+                                }
+                            });
                 }
             }
 

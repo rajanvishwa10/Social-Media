@@ -1,12 +1,12 @@
 package com.android.socialmedia;
 
 public class Notification {
-    String Message, caption, date, imageDate, imageUrl, senderUsername, username;
+    String Message, caption, date, imageDate, imageUrl, senderUsername, username, type;
 
     public Notification() {
     }
 
-    public Notification(String message, String caption, String date, String imageDate, String imageUrl, String senderUsername, String username) {
+    public Notification(String message, String caption, String date, String imageDate, String imageUrl, String senderUsername, String username, String type) {
         Message = message;
         this.caption = caption;
         this.date = date;
@@ -14,6 +14,15 @@ public class Notification {
         this.imageUrl = imageUrl;
         this.senderUsername = senderUsername;
         this.username = username;
+        this.type = type;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public String getMessage() {

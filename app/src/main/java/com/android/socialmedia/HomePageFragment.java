@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class HomePageFragment extends Fragment {
-    String currentUsername, followingUsername;
+    //String currentUsername, followingUsername;
     List<mainpageImagelist> imagelist;
     RecyclerView recyclerView;
     MainpageImageAdapter imageAdapter;

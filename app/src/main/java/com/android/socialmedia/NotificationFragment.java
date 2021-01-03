@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -25,11 +26,13 @@ public class NotificationFragment extends Fragment {
     List<Notification> notificationList;
     RecyclerView recyclerView;
     NotificationAdapter notificationAdapter;
+    ShimmerFrameLayout shimmerFrameLayout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_notification, container, false);
+        shimmerFrameLayout = view.findViewById(R.id.shimmerFrameLayout);
         notificationList = new ArrayList<>();
         recyclerView = view.findViewById(R.id.recyclerView);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
@@ -52,10 +55,14 @@ public class NotificationFragment extends Fragment {
                     databaseReference.child(username).addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            notificationList.clear();
                             for(DataSnapshot dataSnapshot: snapshot.getChildren()){
                                 Notification notification = dataSnapshot.getValue(Notification.class);
                                 notificationList.add(notification);
                             }
+                            shimmerFrameLayout.stopShimmer();
+                            shimmerFrameLayout.setVisibility(View.GONE);
+                            recyclerView.setVisibility(View.VISIBLE);
                             notificationAdapter = new NotificationAdapter(getContext(), notificationList);
                             recyclerView.setAdapter(notificationAdapter);
                         }
@@ -73,5 +80,16 @@ public class NotificationFragment extends Fragment {
 
             }
         });
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        shimmerFrameLayout.startShimmer();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        shimmerFrameLayout.stopShimmer();
     }
 }

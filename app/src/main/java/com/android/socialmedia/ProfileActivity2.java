@@ -40,6 +40,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ProfileActivity2 extends AppCompatActivity {
 
+    NotificationClass notificationClass;
     TextView textView, textView2, textView3, textView4, textView5, textView6, textView7;
     CircleImageView circleImageView;
     String userName;
@@ -59,6 +60,7 @@ public class ProfileActivity2 extends AppCompatActivity {
         String username = getIntent().getStringExtra("username");
         read(username);
         read1(username);
+        notificationClass = new NotificationClass();
 
         textView = findViewById(R.id.username);
         textView2 = findViewById(R.id.name);
@@ -240,6 +242,7 @@ public class ProfileActivity2 extends AppCompatActivity {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Toast.makeText(ProfileActivity2.this, "Following", Toast.LENGTH_SHORT).show();
+                        notificationClass.setNotification(username, userName, userName + " started following you");
                     }
                 });
 

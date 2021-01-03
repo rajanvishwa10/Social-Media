@@ -42,6 +42,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ProfileActivity extends AppCompatActivity {
 
+    NotificationClass notificationClass;
     TextView textView, textView2, textView3, textView4, textView5, textView6, textView7;
     CircleImageView circleImageView;
     String userName;
@@ -61,7 +62,7 @@ public class ProfileActivity extends AppCompatActivity {
         String username = getIntent().getStringExtra("username");
         read(username);
         read1(username);
-
+        notificationClass = new NotificationClass();
         textView = findViewById(R.id.username);
         textView2 = findViewById(R.id.name);
         textView3 = findViewById(R.id.post);
@@ -242,6 +243,7 @@ public class ProfileActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Toast.makeText(ProfileActivity.this, "Following", Toast.LENGTH_SHORT).show();
+                        notificationClass.setNotification(username, userName, userName + " started following you");
                     }
                 });
 
@@ -324,7 +326,7 @@ public class ProfileActivity extends AppCompatActivity {
                         String bio = dataSnapshot.child("Bio").getValue(String.class);
                         String website = dataSnapshot.child("Website").getValue(String.class);
                         boolean verified = dataSnapshot.child("verified").getValue(Boolean.class);
-                        if(verified){
+                        if (verified) {
                             imageView.setVisibility(View.VISIBLE);
                             imageView.setLongClickable(true);
                             imageView.setOnLongClickListener(new View.OnLongClickListener() {
@@ -334,7 +336,7 @@ public class ProfileActivity extends AppCompatActivity {
                                     return true;
                                 }
                             });
-                        }else{
+                        } else {
                             imageView.setVisibility(View.GONE);
                         }
                         try {
@@ -353,7 +355,8 @@ public class ProfileActivity extends AppCompatActivity {
                             } else {
                                 textView7.setVisibility(View.GONE);
                             }
-                        }catch (Exception e){}
+                        } catch (Exception e) {
+                        }
                         textView2.setText(fullName);
                         textView3.setText("" + post);
                         textView4.setText("" + followers);
