@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.media.Image;
 import android.net.Uri;
@@ -68,6 +69,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ProfileFragment extends Fragment {
     TextView textView, textView2, textView3, textView4, textView5, textView6, textView7;
+    TextView postText, followerText, followingText;
     Uri uri;
     CircleImageView imageView;
     ImageView verifiedImage;
@@ -114,6 +116,9 @@ public class ProfileFragment extends Fragment {
         });
 
         textView = view.findViewById(R.id.post);
+        postText = view.findViewById(R.id.posttext);
+        followerText = view.findViewById(R.id.followertext);
+        followingText = view.findViewById(R.id.followingtext);
         textView2 = view.findViewById(R.id.username);
         textView3 = view.findViewById(R.id.name);
         textView4 = view.findViewById(R.id.followers);
@@ -311,6 +316,7 @@ public class ProfileFragment extends Fragment {
                                     imageList.add(imageList1);
                                     Collections.reverse(imageList);
                                 }
+                                recyclerView.setBackground(null);
                                 galleryImageAdapter = new GalleryImageAdapter(getContext(), imageList, username);
                                 recyclerView.setAdapter(galleryImageAdapter);
                             }
@@ -322,20 +328,42 @@ public class ProfileFragment extends Fragment {
                         }
                     });
 
+                    editProfile.setBackgroundColor(getResources().getColor(R.color.white));
+                    editProfile.setTextColor(getResources().getColor(R.color.black));
                     textView.setText("" + post);
+                    textView.setBackground(null);
+                    textView.setTextColor(getResources().getColor(R.color.black));
+                    postText.setBackground(null);
+                    postText.setTextColor(getResources().getColor(R.color.black));
+                    followerText.setBackground(null);
+                    followerText.setTextColor(getResources().getColor(R.color.black));
+                    followingText.setBackground(null);
+                    followingText.setTextColor(getResources().getColor(R.color.black));
                     textView2.setText(username);
+                    textView2.setBackground(null);
+                    textView2.setTextColor(getResources().getColor(R.color.black));
                     textView3.setText(name);
+                    textView3.setBackground(null);
+                    textView3.setTextColor(getResources().getColor(R.color.black));
                     textView4.setText("" + followers);
+                    textView4.setBackground(null);
+                    textView4.setTextColor(getResources().getColor(R.color.black));
                     textView5.setText("" + followings);
+                    textView5.setBackground(null);
+                    textView5.setTextColor(getResources().getColor(R.color.black));
                     if (bio.length() > 0) {
                         textView6.setVisibility(View.VISIBLE);
                         textView6.setText(bio);
+                        textView6.setBackground(null);
+                        textView6.setTextColor(getResources().getColor(R.color.black));
                     } else {
                         textView6.setVisibility(View.GONE);
                     }
                     if (website.length() > 0) {
                         textView7.setVisibility(View.VISIBLE);
                         textView7.setText(website);
+                        textView7.setBackground(null);
+                        textView7.setTextColor(getResources().getColor(R.color.black));
                         textView7.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -366,8 +394,10 @@ public class ProfileFragment extends Fragment {
                     try {
                         if (url.isEmpty()) {
                             imageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_baseline_person_24));
+                            imageView.setBackground(null);
                         } else {
                             Glide.with(getContext()).load(url).into(imageView);
+                            imageView.setBackground(null);
                         }
                     } catch (NullPointerException e) {
                     }

@@ -29,7 +29,7 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_marginStart="5dp"
-            android:background="#dddddd" />
+            android:background="#A9A8A8" />
 
         <TextView
             android:id="@+id/username"
@@ -37,7 +37,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginStart="10dp"
-            android:background="#dddddd"
+            android:background="#A9A8A8"
             android:paddingStart="10dp"
             android:textColor="@color/black" />
     </LinearLayout>
@@ -57,7 +57,7 @@
         android:layout_width="match_parent"
         android:layout_height="350dp"
         android:layout_marginTop="1dp"
-        android:background="#dddddd"
+        android:background="#A9A8A8"
         android:transitionName="image"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -81,9 +81,8 @@
             android:layout_marginVertical="5dp"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="5dp"
-            android:background="#dddddd"
-            android:scaleType="fitCenter"
-            android:src="@drawable/like" />
+            android:background="#A9A8A8"
+            android:scaleType="fitCenter"/>
 
         <ImageButton
             android:id="@+id/unlike"
@@ -103,10 +102,9 @@
             android:layout_height="40dp"
             android:layout_marginVertical="5dp"
             android:layout_marginEnd="5dp"
-            android:background="#dddddd"
+            android:background="#A9A8A8"
             android:padding="2.5dp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/comment" />
+            android:scaleType="fitCenter" />
     </LinearLayout>
 
     <TextView
@@ -114,7 +112,7 @@
         android:layout_width="80dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
-        android:background="#dddddd"
+        android:background="#A9A8A8"
         android:textColor="@color/black"
         android:textSize="15sp"
         android:textStyle="bold"
@@ -140,7 +138,7 @@
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_gravity="center"
-            android:background="#dddddd" />
+            android:background="#A9A8A8" />
 
         <TextView
             android:id="@+id/username2"
@@ -155,7 +153,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
-            android:background="#dddddd"
+            android:background="#A9A8A8"
+            android:layout_gravity="center"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent" />
@@ -179,7 +178,7 @@
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_gravity="center"
-            android:background="#dddddd" />
+            android:background="#A9A8A8" />
 
 
         <TextView
@@ -188,7 +187,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginStart="10dp"
-            android:background="#dddddd"
+            android:background="#A9A8A8"
             android:fontFamily="@font/font"
             android:textColor="#AB000000"
             android:textSize="15sp" />
@@ -203,7 +202,7 @@
         android:layout_marginStart="10dp"
         android:layout_marginTop="5dp"
         android:layout_marginBottom="20sp"
-        android:background="#dddddd"
+        android:background="#A9A8A8"
         android:textColor="@color/black"
         android:textSize="15sp"
         android:textStyle="bold"
