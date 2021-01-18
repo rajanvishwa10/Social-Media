@@ -10,6 +10,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -27,6 +29,7 @@ public class NotificationFragment extends Fragment {
     RecyclerView recyclerView;
     NotificationAdapter notificationAdapter;
     ShimmerFrameLayout shimmerFrameLayout;
+    TextView textView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -35,6 +38,7 @@ public class NotificationFragment extends Fragment {
         shimmerFrameLayout = view.findViewById(R.id.shimmerFrameLayout);
         notificationList = new ArrayList<>();
         recyclerView = view.findViewById(R.id.recyclerView);
+        textView = view.findViewById(R.id.textView);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setReverseLayout(true);
         layoutManager.setStackFromEnd(true);
@@ -56,15 +60,23 @@ public class NotificationFragment extends Fragment {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             notificationList.clear();
-                            for(DataSnapshot dataSnapshot: snapshot.getChildren()){
-                                Notification notification = dataSnapshot.getValue(Notification.class);
-                                notificationList.add(notification);
+                            if (snapshot.exists()) {
+                                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                                    Notification notification = dataSnapshot.getValue(Notification.class);
+                                    notificationList.add(notification);
+                                }
+                                shimmerFrameLayout.stopShimmer();
+                                shimmerFrameLayout.setVisibility(View.GONE);
+                                recyclerView.setVisibility(View.VISIBLE);
+                                notificationAdapter = new NotificationAdapter(getContext(), notificationList);
+                                recyclerView.setAdapter(notificationAdapter);
+                            } else {
+                                shimmerFrameLayout.stopShimmer();
+                                shimmerFrameLayout.setVisibility(View.GONE);
+                                textView.setVisibility(
+                                        View.VISIBLE
+                                );
                             }
-                            shimmerFrameLayout.stopShimmer();
-                            shimmerFrameLayout.setVisibility(View.GONE);
-                            recyclerView.setVisibility(View.VISIBLE);
-                            notificationAdapter = new NotificationAdapter(getContext(), notificationList);
-                            recyclerView.setAdapter(notificationAdapter);
                         }
 
                         @Override
@@ -81,6 +93,7 @@ public class NotificationFragment extends Fragment {
             }
         });
     }
+
     @Override
     public void onResume() {
         super.onResume();

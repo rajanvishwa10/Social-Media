@@ -56,4 +56,14 @@
         android:layout_height="match_parent"
         android:layout_below="@+id/toolbar"
         android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone"
+        android:text="No Notifications"
+        android:textColor="@color/black"
+        android:textSize="19sp"/>
 </RelativeLayout>

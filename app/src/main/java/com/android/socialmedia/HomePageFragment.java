@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.shimmer.Shimmer;
@@ -37,6 +38,7 @@ public class HomePageFragment extends Fragment {
     RecyclerView recyclerView;
     MainpageImageAdapter imageAdapter;
     ShimmerFrameLayout shimmerFrameLayout;
+    TextView textView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -48,6 +50,7 @@ public class HomePageFragment extends Fragment {
 
         shimmerFrameLayout = view.findViewById(R.id.shimmerFrameLayout);
 
+        textView = view.findViewById(R.id.textView);
         imagelist = new ArrayList<>();
         recyclerView = view.findViewById(R.id.recyclerView);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
@@ -73,6 +76,10 @@ public class HomePageFragment extends Fragment {
                     imageAdapter = new MainpageImageAdapter(getContext(), imagelist);
                     recyclerView.setAdapter(imageAdapter);
                     imageAdapter.notifyDataSetChanged();
+                }else{
+                    shimmerFrameLayout.stopShimmer();
+                    shimmerFrameLayout.setVisibility(View.GONE);
+                    textView.setVisibility(View.VISIBLE);
                 }
 
             }
