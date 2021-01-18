@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -23,6 +24,7 @@ import android.widget.Toast;
 
 import com.ablanco.zoomy.Zoomy;
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -31,6 +33,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -44,9 +48,10 @@ public class UploadImageActivity extends AppCompatActivity {
     TextView textView, textView2, textView3, textView4, commenterUsername;
     LinearLayout linearLayout;
     CircleImageView circleImageView, commenterProfilepic;
-    ImageButton button, button2, button3;
+    ImageButton button, button2, button3, deletemenuButton;
     String username, Image, currentUsername, url, caption, date;
     int likes;
+    long post;
     NotificationClass notificationClass;
 
     @Override
@@ -63,19 +68,13 @@ public class UploadImageActivity extends AppCompatActivity {
             }
         });
 
-        commenterProfilepic = findViewById(R.id.Commenterprofilepic);
-        commenterUsername = findViewById(R.id.Commenterusername);
-        linearLayout = findViewById(R.id.commentLayout);
-
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("Users");
-        myRef.addValueEventListener(new ValueEventListener() {
-
+        DatabaseReference myRef2 = FirebaseDatabase.getInstance().getReference("Users");
+        myRef2.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    currentUsername = dataSnapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                            .child("Username").getValue(String.class);
+                     post = dataSnapshot.child(FirebaseAuth.getInstance().getCurrentUser().
+                            getUid()).child("post").getValue(Integer.class);
                 }
             }
 
@@ -84,6 +83,85 @@ public class UploadImageActivity extends AppCompatActivity {
 
             }
         });
+        commenterProfilepic = findViewById(R.id.Commenterprofilepic);
+        commenterUsername = findViewById(R.id.Commenterusername);
+        linearLayout = findViewById(R.id.commentLayout);
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef= database.getReference("Users");
+        myRef.addValueEventListener(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    currentUsername = dataSnapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                            .child("Username").getValue(String.class);
+                    if (currentUsername.equals(username)) {
+                        deletemenuButton.setVisibility(View.VISIBLE);
+                        deletemenuButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                AlertDialog.Builder builder = new AlertDialog.Builder(UploadImageActivity.this);
+                                builder.setTitle("Delete Image");
+                                builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        StorageReference photoRef = FirebaseStorage.getInstance().getReferenceFromUrl(Image);
+                                        photoRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                DatabaseReference databaseReference1 = FirebaseDatabase.getInstance().getReference();
+                                                databaseReference1.child("Images").
+                                                        orderByChild("Image").equalTo(Image).addValueEventListener(new ValueEventListener() {
+                                                    @Override
+                                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                        for (DataSnapshot dataSnapshot2 : snapshot.getChildren()) {
+                                                            dataSnapshot2.getRef().removeValue();
+                                                            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Users").
+                                                                    child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                                                            Map<String, Object> update = new HashMap<>();
+                                                            update.put("post", post - 1);
+                                                            databaseReference.updateChildren(update).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                @Override
+                                                                public void onSuccess(Void aVoid) {
+                                                                    Toast.makeText(UploadImageActivity.this, "Image Deleted", Toast.LENGTH_SHORT).show();
+                                                                    onBackPressed();
+                                                                }
+                                                            });
+                                                        }
+                                                    }
+
+                                                    @Override
+                                                    public void onCancelled(@NonNull DatabaseError error) {
+
+                                                    }
+                                                });
+                                            }
+                                        }).addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception exception) {
+
+                                            }
+                                        });
+                                    }
+                                });
+                                builder.setNegativeButton("Cancel",null);
+                                builder.create().show();
+
+                            }
+                        });
+                    } else {
+                        deletemenuButton.setVisibility(View.GONE);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
 
         ImageView imageView = findViewById(R.id.imageView);
 
@@ -96,6 +174,7 @@ public class UploadImageActivity extends AppCompatActivity {
         button = findViewById(R.id.like);
         button2 = findViewById(R.id.unlike);
         button3 = findViewById(R.id.comment);
+        deletemenuButton = findViewById(R.id.deletemenu);
 
         username = getIntent().getStringExtra("username");
 
@@ -119,6 +198,7 @@ public class UploadImageActivity extends AppCompatActivity {
             textView2.setVisibility(View.GONE);
             textView1.setVisibility(View.GONE);
         }
+
 
         Glide.with(this).load(Image).into(imageView);
         Zoomy.Builder builder = new Zoomy.Builder(this).target(imageView);
@@ -228,6 +308,7 @@ public class UploadImageActivity extends AppCompatActivity {
 
             }
         });
+
     }
 
     private void read2(String username) {

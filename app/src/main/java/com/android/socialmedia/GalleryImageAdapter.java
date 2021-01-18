@@ -42,7 +42,7 @@ public class GalleryImageAdapter extends RecyclerView.Adapter<GalleryImageAdapte
     public void onBindViewHolder(@NonNull GalleryImageAdapter.ViewHolder holder, int position) {
         ImageList imageList = imageLists.get(position);
         System.out.println(imageList.getImage());
-        Glide.with(context).load(imageList.getImage()).into(holder.imageView);
+        Glide.with(context).load(imageList.getImage()).placeholder(R.drawable.ic_placeholder).into(holder.imageView);
         holder.imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

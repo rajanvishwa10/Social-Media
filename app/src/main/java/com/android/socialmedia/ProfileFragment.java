@@ -328,7 +328,8 @@ public class ProfileFragment extends Fragment {
                         }
                     });
 
-                    editProfile.setBackgroundColor(getResources().getColor(R.color.white));
+                   //editProfile.setBackgroundColor(getResources().getColor(R.color.white));
+                    editProfile.setBackgroundColor(Color.WHITE);
                     editProfile.setTextColor(getResources().getColor(R.color.black));
                     textView.setText("" + post);
                     textView.setBackground(null);
@@ -396,7 +397,7 @@ public class ProfileFragment extends Fragment {
                             imageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_baseline_person_24));
                             imageView.setBackground(null);
                         } else {
-                            Glide.with(getContext()).load(url).into(imageView);
+                            Glide.with(getContext()).load(url).placeholder(R.drawable.ic_placeholder).into(imageView);
                             imageView.setBackground(null);
                         }
                     } catch (NullPointerException e) {

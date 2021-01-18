@@ -233,7 +233,7 @@ public class MainpageImageAdapter extends RecyclerView.Adapter<MainpageImageAdap
                 context.startActivity(intent);
             }
         });
-        Glide.with(context).load(comment.getImage()).into(holder.imageView);
+        Glide.with(context).load(comment.getImage()).placeholder(R.drawable.ic_placeholder).into(holder.imageView);
         Zoomy.Builder builder = new Zoomy.Builder((Activity) holder.imageView.getContext()).target(holder.imageView);
         builder.register();
 

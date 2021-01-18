@@ -363,7 +363,7 @@ public class ProfileActivity extends AppCompatActivity {
                         textView5.setText("" + followings);
                         textView6.setText(bio);
 
-                        Glide.with(getApplicationContext()).load(url).into(circleImageView);
+                        Glide.with(getApplicationContext()).load(url).placeholder(R.drawable.ic_placeholder).into(circleImageView);
                     }
                 } else {
                     Toast.makeText(getApplicationContext(), "No user", Toast.LENGTH_SHORT).show();
