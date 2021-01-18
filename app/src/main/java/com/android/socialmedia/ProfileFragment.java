@@ -330,33 +330,33 @@ public class ProfileFragment extends Fragment {
 
                    //editProfile.setBackgroundColor(getResources().getColor(R.color.white));
                     editProfile.setBackgroundColor(Color.WHITE);
-                    editProfile.setTextColor(getResources().getColor(R.color.black));
+                    editProfile.setTextColor(Color.BLACK);
                     textView.setText("" + post);
                     textView.setBackground(null);
-                    textView.setTextColor(getResources().getColor(R.color.black));
+                    textView.setTextColor(Color.BLACK);
                     postText.setBackground(null);
-                    postText.setTextColor(getResources().getColor(R.color.black));
+                    postText.setTextColor(Color.BLACK);
                     followerText.setBackground(null);
-                    followerText.setTextColor(getResources().getColor(R.color.black));
+                    followerText.setTextColor(Color.BLACK);
                     followingText.setBackground(null);
-                    followingText.setTextColor(getResources().getColor(R.color.black));
+                    followingText.setTextColor(Color.BLACK);
                     textView2.setText(username);
                     textView2.setBackground(null);
-                    textView2.setTextColor(getResources().getColor(R.color.black));
+                    textView2.setTextColor(Color.BLACK);
                     textView3.setText(name);
                     textView3.setBackground(null);
-                    textView3.setTextColor(getResources().getColor(R.color.black));
+                    textView3.setTextColor(Color.BLACK);
                     textView4.setText("" + followers);
                     textView4.setBackground(null);
-                    textView4.setTextColor(getResources().getColor(R.color.black));
+                    textView4.setTextColor(Color.BLACK);
                     textView5.setText("" + followings);
                     textView5.setBackground(null);
-                    textView5.setTextColor(getResources().getColor(R.color.black));
+                    textView5.setTextColor(Color.BLACK);
                     if (bio.length() > 0) {
                         textView6.setVisibility(View.VISIBLE);
                         textView6.setText(bio);
                         textView6.setBackground(null);
-                        textView6.setTextColor(getResources().getColor(R.color.black));
+                        textView6.setTextColor(Color.BLACK);
                     } else {
                         textView6.setVisibility(View.GONE);
                     }
@@ -364,7 +364,7 @@ public class ProfileFragment extends Fragment {
                         textView7.setVisibility(View.VISIBLE);
                         textView7.setText(website);
                         textView7.setBackground(null);
-                        textView7.setTextColor(getResources().getColor(R.color.black));
+                        textView7.setTextColor(Color.BLACK);
                         textView7.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
