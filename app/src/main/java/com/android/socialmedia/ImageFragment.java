@@ -49,7 +49,7 @@ import java.util.Locale;
 import java.util.Map;
 
 public class ImageFragment extends Fragment {
-    Uri uri;
+   // Uri uri;
     Bitmap bitmap;
     ImageView imageView;
     ProgressDialog progressDialog;

@@ -5,17 +5,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".UserChatActivity">
+
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/circleImageView"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:elevation="3dp"
         android:layout_alignBottom="@+id/toolbar"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_marginHorizontal="5dp"
         android:layout_marginVertical="5dp"
         android:layout_marginEnd="10dp"
+        android:elevation="3dp"
         android:transitionName="display"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -30,7 +31,6 @@
         android:background="@color/white"
         android:elevation="1dp"
         android:minHeight="?attr/actionBarSize"
-        app:titleTextColor="@color/black"
         app:contentInsetStartWithNavigation="0dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
@@ -38,7 +38,8 @@
         app:layout_constraintTop_toTopOf="parent"
         app:navigationIcon="@drawable/ic_baseline_keyboard_backspace_24"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        app:titleMarginStart="0dp"/>
+        app:titleMarginStart="0dp"
+        app:titleTextColor="@color/black" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler"
@@ -73,9 +74,138 @@
         android:layout_marginBottom="13dp"
         android:layout_toStartOf="@+id/fab"
         android:background="@drawable/editround"
+        android:elevation="1dp"
         android:hint="Type a Message"
         android:inputType="textMultiLine"
         android:paddingStart="20dp"
         android:textSize="20sp" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_above="@+id/sendmess"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginBottom="10dp"
+        android:elevation="2dp"
+        android:visibility="invisible"
+        app:cardBackgroundColor="#EFEFEF"
+        app:cardCornerRadius="10dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="5dp"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:elevation="4dp"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="100dp"
+                    android:layout_height="70dp"
+                    android:layout_gravity="center"
+                    android:background="@android:color/transparent"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_baseline_camera_alt_24" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="Image"
+                    android:textColor="@color/black" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/video"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:elevation="4dp"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="100dp"
+                    android:layout_height="70dp"
+                    android:layout_gravity="center"
+                    android:background="@android:color/transparent"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_baseline_videocam_24" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="Video"
+                    android:textColor="@color/black" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/documents"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:elevation="4dp"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="100dp"
+                    android:layout_height="70dp"
+                    android:layout_gravity="center"
+                    android:background="@android:color/transparent"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_baseline_insert_drive_file_24" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="Document"
+                    android:textColor="@color/black" />
+            </LinearLayout>
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+    <ImageButton
+        android:id="@+id/imageButton1"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/sendmess"
+        android:layout_alignBottom="@id/sendmess"
+        android:layout_marginVertical="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="5dp"
+        android:layout_toStartOf="@+id/fab"
+        android:background="@android:color/transparent"
+        android:elevation="3dp"
+        android:onClick="attachDocument"
+        android:src="@drawable/ic_baseline_attach_file_24" />
+
+    <ImageButton
+        android:id="@+id/imageButton2"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/sendmess"
+        android:layout_alignBottom="@id/sendmess"
+        android:layout_marginVertical="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="5dp"
+        android:layout_toStartOf="@+id/fab"
+        android:background="@android:color/transparent"
+        android:elevation="3dp"
+        android:onClick="visibleCardview"
+        android:src="@drawable/ic_baseline_attach_file_24"
+        android:visibility="gone" />
 
 </RelativeLayout>

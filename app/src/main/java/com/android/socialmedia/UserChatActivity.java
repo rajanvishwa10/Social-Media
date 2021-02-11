@@ -1,17 +1,23 @@
 package com.android.socialmedia;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -26,6 +32,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import org.w3c.dom.Text;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -38,9 +46,10 @@ import java.util.Map;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class UserChatActivity extends AppCompatActivity {
-
+    CardView cardView;
     EditText editText;
-    String username,currentUsername;
+    LinearLayout imageLinearLayout, videoLinaerLayout, docLinearLayout;
+    String username, currentUsername;
     Toolbar toolbar;
     DatabaseReference myRef;
     CircleImageView circleImageView;
@@ -49,11 +58,20 @@ public class UserChatActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     ValueEventListener valueEventListener;
     DatabaseReference databaseReference;
+    ImageButton imageButton, imageButton2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_chat);
+
+        cardView = findViewById(R.id.cardView);
+        imageButton = findViewById(R.id.imageButton1);
+        imageButton2 = findViewById(R.id.imageButton2);
+
+        imageLinearLayout = findViewById(R.id.image);
+        videoLinaerLayout = findViewById(R.id.video);
+        docLinearLayout = findViewById(R.id.documents);
 
         recyclerView = findViewById(R.id.recycler);
         chats = new ArrayList<>();
@@ -95,7 +113,7 @@ public class UserChatActivity extends AppCompatActivity {
                     currentUsername = dataSnapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Username").getValue(String.class);
                     SharedPreferences sharedPreferences = getSharedPreferences("username", Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putString("username",currentUsername);
+                    editor.putString("username", currentUsername);
                     editor.apply();
                     readMessages(currentUsername, username);
                 }
@@ -103,11 +121,77 @@ public class UserChatActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                
+                error.toException().printStackTrace();
             }
         });
 
+        imageLinearLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SelectImage();
+            }
+        });
+        videoLinaerLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectVideo();
+            }
+        });
+        docLinearLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                intent.setType("file/*");
+                startActivityForResult(intent.createChooser(intent, "Select file"), 4);
+            }
+        });
         seenMessage(username);
+    }
+
+    private void SelectImage() {
+        final CharSequence[] items = {"Gallery", "Camera", "Cancel"};
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Add Image");
+        builder.setItems(items, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                if (items[i].equals("Camera")) {
+                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    startActivityForResult(intent, 0);
+                } else if (items[i].equals("Gallery")) {
+                    Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                    intent.setType("image/*");
+                    startActivityForResult(intent.createChooser(intent, "Select file"), 1);
+                } else if (items[i].equals("Cancel")) {
+                    dialogInterface.dismiss();
+                }
+            }
+        });
+        builder.create().show();
+    }
+
+    private void selectVideo() {
+        final CharSequence[] items = {"Gallery", "Camera", "Cancel"};
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Add Video");
+        builder.setItems(items, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                if (items[i].equals("Camera")) {
+                    Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+                    startActivityForResult(intent, 2);
+                } else if (items[i].equals("Gallery")) {
+                    Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                    intent.setType("video/*");
+                    startActivityForResult(intent.createChooser(intent, "Select file"), 3);
+                } else if (items[i].equals("Cancel")) {
+                    dialogInterface.dismiss();
+                }
+            }
+        });
+        builder.create().show();
     }
 
     private void read(String username) {
@@ -282,5 +366,17 @@ public class UserChatActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         finish();
+    }
+
+    public void attachDocument(View view) {
+        imageButton2.setVisibility(View.VISIBLE);
+        imageButton.setVisibility(View.GONE);
+        cardView.setVisibility(View.VISIBLE);
+    }
+
+    public void visibleCardview(View view) {
+        imageButton.setVisibility(View.VISIBLE);
+        imageButton2.setVisibility(View.GONE);
+        cardView.setVisibility(View.INVISIBLE);
     }
 }
