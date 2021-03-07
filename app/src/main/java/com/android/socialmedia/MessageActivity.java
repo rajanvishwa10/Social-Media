@@ -71,7 +71,6 @@ public class MessageActivity extends AppCompatActivity {
                                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                                     MessageUser messageUser = dataSnapshot.getValue(MessageUser.class);
                                     userList.add(messageUser);
-
                                 }
                                 messageAdapter = new MessageListAdapter(getApplicationContext(), userList);
                                 recyclerView.setAdapter(messageAdapter);

@@ -32,8 +32,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-import org.w3c.dom.Text;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -48,7 +46,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class UserChatActivity extends AppCompatActivity {
     CardView cardView;
     EditText editText;
-    LinearLayout imageLinearLayout, videoLinaerLayout, docLinearLayout;
+    LinearLayout imageLinearLayout, videoLinearLayout, docLinearLayout;
     String username, currentUsername;
     Toolbar toolbar;
     DatabaseReference myRef;
@@ -70,7 +68,7 @@ public class UserChatActivity extends AppCompatActivity {
         imageButton2 = findViewById(R.id.imageButton2);
 
         imageLinearLayout = findViewById(R.id.image);
-        videoLinaerLayout = findViewById(R.id.video);
+        videoLinearLayout = findViewById(R.id.video);
         docLinearLayout = findViewById(R.id.documents);
 
         recyclerView = findViewById(R.id.recycler);
@@ -78,6 +76,14 @@ public class UserChatActivity extends AppCompatActivity {
         circleImageView = findViewById(R.id.circleImageView);
 
         editText = findViewById(R.id.sendmess);
+        editText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cardView.setVisibility(View.INVISIBLE);
+                imageButton.setVisibility(View.VISIBLE);
+                imageButton2.setVisibility(View.GONE);
+            }
+        });
         toolbar = findViewById(R.id.toolbar);
         username = getIntent().getStringExtra("username");
         toolbar.setTitle(username);
@@ -100,6 +106,7 @@ public class UserChatActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 onBackPressed();
+                finish();
             }
         });
 
@@ -131,7 +138,7 @@ public class UserChatActivity extends AppCompatActivity {
                 SelectImage();
             }
         });
-        videoLinaerLayout.setOnClickListener(new View.OnClickListener() {
+        videoLinearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 selectVideo();
@@ -238,7 +245,7 @@ public class UserChatActivity extends AppCompatActivity {
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy h:mm:ss:SSS", Locale.getDefault());
         String date = dateFormat.format(c);
-        System.out.println(date);
+        //System.out.println(date);
 
         Map<String, Object> messages = new HashMap<>();
         messages.put("Sender", currentUsername);
@@ -250,6 +257,16 @@ public class UserChatActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isComplete()) {
+                    final DatabaseReference databaseReference1 = FirebaseDatabase.getInstance().getReference("Chatlist")
+                            .child(currentUsername).child(username);
+                    HashMap<String, Object> hashMap = new HashMap<>();
+                    hashMap.put("date", date);
+                    databaseReference1.updateChildren(hashMap);
+
+                    final DatabaseReference databaseReference2 = FirebaseDatabase.getInstance().getReference("Chatlist")
+                            .child(username).child(currentUsername);
+
+                    databaseReference2.updateChildren(hashMap);
                     editText.setText(null);
                 } else {
                     System.out.println(task);
@@ -314,8 +331,6 @@ public class UserChatActivity extends AppCompatActivity {
                         hashMap.put("isseen", true);
                         dataSnapshot.getRef().updateChildren(hashMap);
                         System.out.println("isseen");
-                    } else {
-                        //System.out.println("error");
                     }
                 }
             }
@@ -366,6 +381,7 @@ public class UserChatActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         finish();
+        databaseReference.removeEventListener(valueEventListener);
     }
 
     public void attachDocument(View view) {

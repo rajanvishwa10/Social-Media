@@ -22,6 +22,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -48,7 +50,6 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
     public void onBindViewHolder(@NonNull MessageListAdapter.ViewHolder holder, int position) {
         MessageUser user = userList.get(position);
         String sender = user.getId();
-
         holder.textView.setText(sender);
 
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
@@ -93,6 +94,7 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
                         }
                     }
                 }
+
                 if (count > 0) {
                     holder.textView2.setTypeface(holder.textView2.getTypeface(), Typeface.BOLD);
                     holder.countTextView.setVisibility(View.VISIBLE);
