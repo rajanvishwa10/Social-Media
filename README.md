@@ -30,6 +30,7 @@
 <p align="center">
   <img src="https://github.com/rajanvishwa10/Social-Media/blob/master/Screenshot_20210306-220016.png" width="300">
   <img src="https://github.com/rajanvishwa10/Social-Media/blob/master/Screenshot_20210306-220021.png" width="300">
+  <img src="https://github.com/rajanvishwa10/Social-Media/blob/master/screenshot.png" width="270">
 </p>
 
 <h2>Edit Profile Page</h2>
