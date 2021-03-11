@@ -37,3 +37,8 @@
 <p align="center">
   <img src="https://github.com/rajanvishwa10/Social-Media/blob/master/Screenshot_20210306-215816.png" width="300">
 </p>
+
+<h2>Home Screen Quick Action</h2>
+<p align="center">
+  <img src="https://github.com/rajanvishwa10/Social-Media/blob/master/Screenshot_20210311-231140.png" width="300">
+</p>
