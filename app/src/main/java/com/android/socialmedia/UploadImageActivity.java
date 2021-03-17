@@ -416,7 +416,7 @@ public class UploadImageActivity extends AppCompatActivity {
                                 @Override
                                 public void onSuccess(Void aVoid) {
                                     if (!username.equals(currentUsername)) {
-                                        notificationClass.setNotification(username, currentUsername, currentUsername + " liked your photo", Image, caption, date);
+                                        notificationClass.setNotification(username, currentUsername, currentUsername + " liked your photo", Image, caption, date, getApplicationContext());
                                     }
                                 }
                             });

@@ -181,7 +181,7 @@ public class CommentActivity extends AppCompatActivity {
                                 public void onSuccess(Void aVoid) {
                                     editText.setText(null);
                                     if (!username.equals(currentUsername)) {
-                                        notificationClass.setNotification(username, currentUsername, currentUsername + " commented : " + comment, image, caption, imagedate);
+                                        notificationClass.setNotification(username, currentUsername, currentUsername + " commented : " + comment, image, caption, imagedate, getApplicationContext());
                                     }
                                 }
                             });

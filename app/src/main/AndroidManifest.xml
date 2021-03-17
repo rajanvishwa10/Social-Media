@@ -13,7 +13,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.SocialMedia">
-        <activity android:name=".UserChatActivity" />
+        <activity android:name=".UserChatActivity"/>
         <activity android:name=".NewmessageActivity" />
         <activity android:name=".MessageActivity" />
         <activity android:name=".EditProfileActivity" />
@@ -38,6 +38,20 @@
             </intent-filter>
         </activity>
         <activity android:name=".MainActivity" />
+        <service
+            android:name=".MyFirebaseMessagingService"
+            android:exported="false"
+            android:directBootAware="true">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <meta-data android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/socialmedia" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/ic_launcher_background" />
+
     </application>
 
 </manifest>

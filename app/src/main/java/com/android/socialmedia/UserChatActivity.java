@@ -20,6 +20,13 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -31,6 +38,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.messaging.FirebaseMessaging;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -57,11 +68,15 @@ public class UserChatActivity extends AppCompatActivity {
     ValueEventListener valueEventListener;
     DatabaseReference databaseReference;
     ImageButton imageButton, imageButton2;
+    String url = "https://fcm.googleapis.com/fcm/send";
+    RequestQueue requestQueue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_chat);
+
+        requestQueue = Volley.newRequestQueue(this);
 
         cardView = findViewById(R.id.cardView);
         imageButton = findViewById(R.id.imageButton1);
@@ -210,7 +225,6 @@ public class UserChatActivity extends AppCompatActivity {
                 if (snapshot.exists()) {
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         String url = dataSnapshot.child("profileImage").getValue(String.class);
-
                         Glide.with(getApplicationContext()).load(url).into(circleImageView);
                     }
                 } else {
@@ -257,6 +271,7 @@ public class UserChatActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isComplete()) {
+                    sendNotification(message, username, currentUsername);
                     final DatabaseReference databaseReference1 = FirebaseDatabase.getInstance().getReference("Chatlist")
                             .child(currentUsername).child(username);
                     HashMap<String, Object> hashMap = new HashMap<>();
@@ -317,6 +332,41 @@ public class UserChatActivity extends AppCompatActivity {
         });
 
 
+    }
+
+    private void sendNotification(String message, String receiver, String sender) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("to", "/topics/" + receiver);
+            JSONObject jsonObject1 = new JSONObject();
+            jsonObject1.put("title", sender);
+            jsonObject1.put("body", sender + " : " + message);
+            jsonObject.put("notification", jsonObject1);
+            JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, jsonObject,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            System.out.println("response" + response);
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+
+                }
+            }) {
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    Map<String, String> map = new HashMap<>();
+                    map.put("content-type", "application/json");
+                    map.put("authorization", "key = AAAAYtXPhzM:APA91bFbazWBK9wl73zbOu1nDLsTxINZVMSYl-l74vdaqREPATUkzzCZLFJPJvoDlDaWsx30bauUCiPdz4P4Mx2XKcVmhXIVUQHVS-irRdSqdI9SS5PovOoTWeby1Du1t3nK0Ep7PGxA");
+
+                    return map;
+                }
+            };
+            requestQueue.add(request);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     private void seenMessage(final String username) {

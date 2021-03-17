@@ -419,7 +419,7 @@ public class MainpageImageAdapter extends RecyclerView.Adapter<MainpageImageAdap
                                         @Override
                                         public void onSuccess(Void aVoid) {
                                             if(!username.equals(currentUsername)){
-                                                notificationClass.setNotification(username, currentUsername, currentUsername+ " liked your photo" , image, caption, date);
+                                                notificationClass.setNotification(username, currentUsername, currentUsername+ " liked your photo" , image, caption, date, context);
                                             }
                                         }
                                     });
