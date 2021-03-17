@@ -30,9 +30,15 @@
 <p align="center">
   <img src="https://github.com/rajanvishwa10/Social-Media/blob/master/Screenshot_20210306-220016.png" width="300">
   <img src="https://github.com/rajanvishwa10/Social-Media/blob/master/Screenshot_20210306-220021.png" width="300">
+  <img src="https://github.com/rajanvishwa10/Social-Media/blob/master/screenshot.png" width="270">
 </p>
 
 <h2>Edit Profile Page</h2>
 <p align="center">
   <img src="https://github.com/rajanvishwa10/Social-Media/blob/master/Screenshot_20210306-215816.png" width="300">
+</p>
+
+<h2>Home Screen Quick Action</h2>
+<p align="center">
+  <img src="https://github.com/rajanvishwa10/Social-Media/blob/master/Screenshot_20210311-231140.png" width="300">
 </p>
