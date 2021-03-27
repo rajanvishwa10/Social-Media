@@ -6,6 +6,7 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Context;
 import android.content.Intent;
@@ -54,10 +55,9 @@ public class MainActivity extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.N_MR1)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        shortcut();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        shortcut();
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("Users");
@@ -76,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
 
         ChipNavigationBar bottomNavigationView = findViewById(R.id.nav_view);
         bottomNavigationView.setItemSelected(R.id.home, true);
@@ -119,6 +120,23 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        Uri uri = getIntent().getData();
+        if (uri != null) {
+            String intentData = uri.getQueryParameters("data").toString();
+            String data = intentData.substring(1, intentData.length() - 1);
+            //Toast.makeText(this, data, Toast.LENGTH_SHORT).show();
+            if (data.equals("profile")) {
+                bottomNavigationView.setItemSelected(R.id.Profile, true);
+                getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment, new ProfileFragment()).commit();
+            } else if (data.equals("camera")) {
+                bottomNavigationView.setItemSelected(R.id.add, true);
+                getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment, new ImageFragment()).commit();
+            } else if (data.equals("noti")) {
+                bottomNavigationView.setItemSelected(R.id.notification, true);
+                getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment, new NotificationFragment()).commit();
+            }
+        }
+
 //        fm.beginTransaction().add(R.id.nav_host_fragment, fragment4, "4").hide(fragment4).commit();
 //        fm.beginTransaction().add(R.id.nav_host_fragment, fragment3, "3").hide(fragment3).commit();
 //        fm.beginTransaction().add(R.id.nav_host_fragment, fragment2, "2").hide(fragment2).commit();
@@ -141,39 +159,67 @@ public class MainActivity extends AppCompatActivity {
                     ShortcutInfo info = new ShortcutInfo.Builder(getApplicationContext(), "Messages").
                             setShortLabel("Message").
                             setLongLabel("Message").
+                            setDisabledMessage("Disabled").
                             setIcon(Icon.createWithResource(getApplicationContext(), R.drawable.ic_baseline_message_24)).
                             setIntent(messageIntent).
                             build();
 
-                    Intent followersIntent = new Intent(getApplicationContext(), ListActivity.class);
-                    followersIntent.setAction(Intent.ACTION_VIEW);
-                    followersIntent.putExtra("string", "Followers");
-                    followersIntent.putExtra("username", username);
-                    ShortcutInfo info2 = new ShortcutInfo.Builder(getApplicationContext(), "Followers").
-                            setShortLabel("Followers").
-                            setLongLabel("Followers").
-                            setIcon(Icon.createWithResource(getApplicationContext(), R.drawable.ic_baseline_person_24)).
-                            setIntent(followersIntent).
+//                    Intent followersIntent = new Intent(getApplicationContext(), ListActivity.class);
+//                    followersIntent.setAction(Intent.ACTION_VIEW);
+//                    followersIntent.putExtra("string", "Followers");
+//                    followersIntent.putExtra("username", username);
+//                    ShortcutInfo info2 = new ShortcutInfo.Builder(getApplicationContext(), "Followers").
+//                            setShortLabel("Followers").
+//                            setLongLabel("Followers").
+//                            setIcon(Icon.createWithResource(getApplicationContext(), R.drawable.ic_baseline_person_24)).
+//                            setIntent(followersIntent).
+//                            build();
+//
+//                    Intent followingIntent = new Intent(getApplicationContext(), ListActivity.class);
+//                    followingIntent.setAction(Intent.ACTION_VIEW);
+//                    followingIntent.putExtra("string", "Following");
+//                    followingIntent.putExtra("username", username);
+//                    ShortcutInfo info3 = new ShortcutInfo.Builder(getApplicationContext(), "Following").
+//                            setShortLabel("Following").
+//                            setLongLabel("Following").
+//                            setIcon(Icon.createWithResource(getApplicationContext(), R.drawable.ic_baseline_person_24)).
+//                            setIntent(followingIntent).
+//                            build();
+
+//                    Intent newMessageIntent = new Intent(getApplicationContext(), NewmessageActivity.class);
+//                    newMessageIntent.setAction(Intent.ACTION_VIEW);
+//                    ShortcutInfo info3 = new ShortcutInfo.Builder(getApplicationContext(), "NewMessage").
+//                            setShortLabel("New Message").
+//                            setLongLabel("New Message").
+//                            setIcon(Icon.createWithResource(getApplicationContext(), R.drawable.ic_baseline_message_24)).
+//                            setIntent(newMessageIntent).
+//                            build();
+
+                    ShortcutInfo info2 = new ShortcutInfo.Builder(getApplicationContext(), "camera").
+                            setShortLabel("Open Camera").
+                            setLongLabel("Open Camera").
+                            setDisabledMessage("Disabled").
+                            setIcon(Icon.createWithResource(getApplicationContext(), R.drawable.ic_baseline_camera_alt_24)).
+                            setIntent(new Intent(Intent.ACTION_VIEW,
+                                    Uri.parse("http://www.rajanvishwakarma.com/profile?data=camera"))).
                             build();
 
-                    Intent followingIntent = new Intent(getApplicationContext(), ListActivity.class);
-                    followingIntent.setAction(Intent.ACTION_VIEW);
-                    followingIntent.putExtra("string", "Following");
-                    followingIntent.putExtra("username", username);
-                    ShortcutInfo info3 = new ShortcutInfo.Builder(getApplicationContext(), "Following").
-                            setShortLabel("Following").
-                            setLongLabel("Following").
-                            setIcon(Icon.createWithResource(getApplicationContext(), R.drawable.ic_baseline_person_24)).
-                            setIntent(followingIntent).
+                    ShortcutInfo info3 = new ShortcutInfo.Builder(getApplicationContext(), "notification").
+                            setShortLabel("Notification").
+                            setLongLabel("Notification").
+                            setDisabledMessage("Disabled").
+                            setIcon(Icon.createWithResource(getApplicationContext(), R.drawable.ic_baseline_notifications_24)).
+                            setIntent(new Intent(Intent.ACTION_VIEW,
+                                    Uri.parse("http://www.rajanvishwakarma.com/profile?data=noti"))).
                             build();
-
-                    Intent newMessageIntent = new Intent(getApplicationContext(), NewmessageActivity.class);
-                    newMessageIntent.setAction(Intent.ACTION_VIEW);
-                    ShortcutInfo info4 = new ShortcutInfo.Builder(getApplicationContext(), "NewMessage").
-                            setShortLabel("New Message").
-                            setLongLabel("New Message").
-                            setIcon(Icon.createWithResource(getApplicationContext(), R.drawable.ic_baseline_message_24)).
-                            setIntent(newMessageIntent).
+//
+                    ShortcutInfo info4 = new ShortcutInfo.Builder(getApplicationContext(), "Profile").
+                            setShortLabel("Profile").
+                            setLongLabel("Profile").
+                            setDisabledMessage("Disabled").
+                            setIntent(new Intent(Intent.ACTION_VIEW,
+                                    Uri.parse("http://www.rajanvishwakarma.com/profile?data=profile"))).
+                            setIcon(Icon.createWithResource(getApplicationContext(), R.drawable.ic_baseline_person_24)).
                             build();
 
                     manager.setDynamicShortcuts(Arrays.asList(info, info2, info3, info4));

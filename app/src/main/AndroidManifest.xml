@@ -37,7 +37,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity" />
+        <activity android:name=".MainActivity">
+            <intent-filter android:label="DeepLink">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="http"
+                    android:host="www.rajanvishwakarma.com"
+                    android:pathPrefix="/profile"/>
+            </intent-filter>
+        </activity>
         <service
             android:name=".MyFirebaseMessagingService"
             android:exported="false"
