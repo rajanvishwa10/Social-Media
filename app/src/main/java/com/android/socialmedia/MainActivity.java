@@ -200,8 +200,8 @@ public class MainActivity extends AppCompatActivity {
 //                            build();
 
                     ShortcutInfo info2 = new ShortcutInfo.Builder(getApplicationContext(), "camera").
-                            setShortLabel("Open Camera").
-                            setLongLabel("Open Camera").
+                            setShortLabel("Upload").
+                            setLongLabel("Upload").
                             setDisabledMessage("Disabled").
                             setIcon(Icon.createWithResource(getApplicationContext(), R.drawable.ic_baseline_camera_alt_24)).
                             setIntent(new Intent(Intent.ACTION_VIEW,
