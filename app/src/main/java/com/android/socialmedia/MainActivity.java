@@ -125,15 +125,19 @@ public class MainActivity extends AppCompatActivity {
             String intentData = uri.getQueryParameters("data").toString();
             String data = intentData.substring(1, intentData.length() - 1);
             //Toast.makeText(this, data, Toast.LENGTH_SHORT).show();
-            if (data.equals("profile")) {
-                bottomNavigationView.setItemSelected(R.id.Profile, true);
-                getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment, new ProfileFragment()).commit();
-            } else if (data.equals("camera")) {
-                bottomNavigationView.setItemSelected(R.id.add, true);
-                getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment, new ImageFragment()).commit();
-            } else if (data.equals("noti")) {
-                bottomNavigationView.setItemSelected(R.id.notification, true);
-                getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment, new NotificationFragment()).commit();
+            switch (data) {
+                case "profile":
+                    bottomNavigationView.setItemSelected(R.id.Profile, true);
+                    getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment, new ProfileFragment()).commit();
+                    break;
+                case "camera":
+                    bottomNavigationView.setItemSelected(R.id.add, true);
+                    getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment, new ImageFragment()).commit();
+                    break;
+                case "noti":
+                    bottomNavigationView.setItemSelected(R.id.notification, true);
+                    getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment, new NotificationFragment()).commit();
+                    break;
             }
         }
 
