@@ -49,20 +49,28 @@ public class NotificationClass {
         ref.updateChildren(updates).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                sendNotification(Message, username, currentUsername, context);
+                sendNotification(Message, username, currentUsername, context, "like", image);
             }
         });
     }
 
-    private void sendNotification(String message, String receiver, String sender, Context context) {
+    private void sendNotification(String message, String receiver, String sender, Context context, String type, String image) {
         requestQueue = Volley.newRequestQueue(context);
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("to", "/topics/" + receiver);
+
             JSONObject jsonObject1 = new JSONObject();
             jsonObject1.put("title", sender);
             jsonObject1.put("body", message);
+
+            JSONObject jsonObject2 = new JSONObject();
+            jsonObject2.put("type", type);
+            jsonObject2.put("image", image);
+
             jsonObject.put("notification", jsonObject1);
+            jsonObject.put("data", jsonObject2);
+
             JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, jsonObject,
                     new Response.Listener<JSONObject>() {
                         @Override
@@ -90,7 +98,7 @@ public class NotificationClass {
         }
     }
 
-    public void setNotification(String username, String currentUsername, String Message) {
+    public void setNotification(String username, String currentUsername, String Message, Context context) {
         final Date c = Calendar.getInstance().getTime();
         SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.getDefault());
         final String formattedDate = df.format(c);
@@ -105,6 +113,8 @@ public class NotificationClass {
         updates.put("date", formattedDate);
         updates.put("username", username);
         updates.put("type", "follow");
-        ref.updateChildren(updates);
+        ref.updateChildren(updates).addOnSuccessListener(aVoid -> {
+            sendNotification(Message, username, currentUsername, context, "follow", "");
+        });
     }
 }

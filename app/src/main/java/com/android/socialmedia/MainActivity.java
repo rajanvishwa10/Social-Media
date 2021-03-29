@@ -44,7 +44,7 @@ import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity {
     String username;
-    //    final Fragment fragment1 = new HomePageFragment();
+//    final Fragment fragment1 = new HomePageFragment();
 //    final Fragment fragment2 = new SearchFragment();
 //    final Fragment fragment3 = new ImageFragment();
 //    final Fragment fragment4 = new ProfileFragment();
@@ -216,7 +216,7 @@ public class MainActivity extends AppCompatActivity {
                             setIntent(new Intent(Intent.ACTION_VIEW,
                                     Uri.parse("http://www.rajanvishwakarma.com/profile?data=noti"))).
                             build();
-//
+
                     ShortcutInfo info4 = new ShortcutInfo.Builder(getApplicationContext(), "Profile").
                             setShortLabel("Profile").
                             setLongLabel("Profile").
@@ -235,7 +235,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
 
     }
 

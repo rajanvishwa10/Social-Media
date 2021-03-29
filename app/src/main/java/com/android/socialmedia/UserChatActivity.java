@@ -251,7 +251,7 @@ public class UserChatActivity extends AppCompatActivity {
 
     private void sendMessage(String currentUsername, String username, String message) {
         final Date c = Calendar.getInstance().getTime();
-        SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy h:mm a", Locale.getDefault());
+        SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy h:mm:ss a", Locale.getDefault());
         final String formattedDate = df.format(c);
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Messages");
         //.child(Sender + " " + Receiver)
@@ -267,7 +267,7 @@ public class UserChatActivity extends AppCompatActivity {
         messages.put("Message", message);
         messages.put("Date", formattedDate);
         messages.put("isseen", false);
-        databaseReference.child(c.toString()).setValue(messages).addOnCompleteListener(new OnCompleteListener<Void>() {
+        databaseReference.child(formattedDate).setValue(messages).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isComplete()) {
@@ -338,10 +338,17 @@ public class UserChatActivity extends AppCompatActivity {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("to", "/topics/" + receiver);
+
             JSONObject jsonObject1 = new JSONObject();
             jsonObject1.put("title", sender);
             jsonObject1.put("body", sender + " : " + message);
+
+            JSONObject jsonObject2 = new JSONObject();
+            jsonObject2.put("type","message");
+
             jsonObject.put("notification", jsonObject1);
+            jsonObject.put("data", jsonObject2);
+
             JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, jsonObject,
                     new Response.Listener<JSONObject>() {
                         @Override
@@ -433,6 +440,7 @@ public class UserChatActivity extends AppCompatActivity {
         finish();
         databaseReference.removeEventListener(valueEventListener);
     }
+
 
     public void attachDocument(View view) {
         imageButton2.setVisibility(View.VISIBLE);

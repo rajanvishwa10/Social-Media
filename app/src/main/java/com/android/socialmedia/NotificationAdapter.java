@@ -80,9 +80,13 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         dp = dataSnapshot.child("profileImage").
                                 getValue(String.class);
-                        Glide.with(context).load(dp).into(holder.circleImageView);
+                        try {
+                            Glide.with(context).load(dp).into(holder.circleImageView);
 
-                        Glide.with(context).load(dp).into(holder.circleImageView2);
+                            Glide.with(context).load(dp).into(holder.circleImageView2);
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
                     }
                 }
             }
@@ -234,7 +238,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
                         @Override
                         public void onSuccess(Void aVoid) {
                             Toast.makeText(context, "Following", Toast.LENGTH_SHORT).show();
-                            notificationClass.setNotification(senderUsername, username, username + " started following you");
+                            //notificationClass.setNotification(senderUsername, username, username + " started following you", context);
                         }
                     });
 

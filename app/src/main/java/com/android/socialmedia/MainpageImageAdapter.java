@@ -176,21 +176,26 @@ public class MainpageImageAdapter extends RecyclerView.Adapter<MainpageImageAdap
                                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                                             if (snapshot.exists()) {
                                                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                                                    String profile = dataSnapshot.child("profileImage").
-                                                            getValue(String.class);
-                                                    Glide.with(context).load(profile).into(holder.commenterProfilepic);
-                                                    holder.commentlinearlayout.setOnClickListener(new View.OnClickListener() {
-                                                        @Override
-                                                        public void onClick(View v) {
-                                                            Intent intent = new Intent(context, CommentActivity.class);
-                                                            intent.putExtra("username", username);
-                                                            intent.putExtra("image", image);
-                                                            intent.putExtra("caption", caption);
-                                                            intent.putExtra("profilepic", profile);
-                                                            intent.putExtra("imagedate",date);
-                                                            context.startActivity(intent);
-                                                        }
-                                                    });
+                                                    try {
+                                                        String profile = dataSnapshot.child("profileImage").
+                                                                getValue(String.class);
+                                                        Glide.with(context).load(profile).into(holder.commenterProfilepic);
+
+                                                        holder.commentlinearlayout.setOnClickListener(new View.OnClickListener() {
+                                                            @Override
+                                                            public void onClick(View v) {
+                                                                Intent intent = new Intent(context, CommentActivity.class);
+                                                                intent.putExtra("username", username);
+                                                                intent.putExtra("image", image);
+                                                                intent.putExtra("caption", caption);
+                                                                intent.putExtra("profilepic", profile);
+                                                                intent.putExtra("imagedate", date);
+                                                                context.startActivity(intent);
+                                                            }
+                                                        });
+                                                    } catch (Exception e) {
+                                                        e.printStackTrace();
+                                                    }
                                                 }
                                             }
                                         }
@@ -245,8 +250,8 @@ public class MainpageImageAdapter extends RecyclerView.Adapter<MainpageImageAdap
                 if (snapshot.exists()) {
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         try {
-                           String dp = dataSnapshot.child("profileImage").
-                                   getValue(String.class);
+                            String dp = dataSnapshot.child("profileImage").
+                                    getValue(String.class);
                             Glide.with(context).load(dp).into(holder.circleImageView);
                             Glide.with(context).load(dp).into(holder.circleImageViewDp);
                             holder.linearLayout3.setOnClickListener(new View.OnClickListener() {
@@ -418,8 +423,8 @@ public class MainpageImageAdapter extends RecyclerView.Adapter<MainpageImageAdap
                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(Void aVoid) {
-                                            if(!username.equals(currentUsername)){
-                                                notificationClass.setNotification(username, currentUsername, currentUsername+ " liked your photo" , image, caption, date, context);
+                                            if (!username.equals(currentUsername)) {
+                                                notificationClass.setNotification(username, currentUsername, currentUsername + " liked your photo", image, caption, date, context);
                                             }
                                         }
                                     });

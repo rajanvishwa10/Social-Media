@@ -243,7 +243,7 @@ public class ProfileActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Toast.makeText(ProfileActivity.this, "Following", Toast.LENGTH_SHORT).show();
-                        notificationClass.setNotification(username, userName, userName + " started following you");
+                        notificationClass.setNotification(username, userName, userName + " started following you", getApplicationContext());
                     }
                 });
 
