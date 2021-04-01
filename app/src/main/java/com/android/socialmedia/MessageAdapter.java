@@ -54,19 +54,41 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         final String time = chat.getDate();
         String[] newTime = time.split("\\s");
 
-        holder.show_message.setText(chatMessage);
-
-
-        holder.time.setText(newTime[1] + " " + newTime[2]);
-
-        if (position == chats.size() - 1) {
-            if (chat.isIsseen()) {
-                holder.isSeen.setText("Seen");
-            } else {
-                holder.isSeen.setText("Delivered");
-            }
-        } else {
+        String type = chat.getType();
+        if (type.equals("image")) {
+            holder.cardView.setVisibility(View.VISIBLE);
+            holder.linearLayout.setVisibility(View.GONE);
+            holder.imageTime.setVisibility(View.VISIBLE);
+            holder.imageTime.setText(newTime[1] + " " + newTime[2]);
             holder.isSeen.setVisibility(View.GONE);
+            if (position == chats.size() - 1) {
+                holder.isSeen2.setVisibility(View.VISIBLE);
+                if (chat.isIsseen()) {
+                    holder.isSeen2.setText("Seen");
+                } else {
+                    holder.isSeen2.setText("Delivered");
+                }
+            } else {
+                holder.isSeen2.setVisibility(View.GONE);
+            }
+            Glide.with(context).load(chatMessage).into(holder.imageView);
+        }else{
+            holder.cardView.setVisibility(View.GONE);
+            holder.linearLayout.setVisibility(View.VISIBLE);
+
+            holder.show_message.setText(chatMessage);
+
+            holder.time.setText(newTime[1] + " " + newTime[2]);
+
+            if (position == chats.size() - 1) {
+                if (chat.isIsseen()) {
+                    holder.isSeen.setText("Seen");
+                } else {
+                    holder.isSeen.setText("Delivered");
+                }
+            } else {
+                holder.isSeen.setVisibility(View.GONE);
+            }
         }
 
     }
@@ -78,7 +100,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        TextView show_message, time, imageTime, isSeen;
+        TextView show_message, time, imageTime, isSeen, isSeen2;
         ImageView imageView;
         LinearLayout linearLayout;
         CardView cardView;
@@ -93,6 +115,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             cardView = itemView.findViewById(R.id.cardView);
             imageTime = itemView.findViewById(R.id.imageTime);
             isSeen = itemView.findViewById(R.id.seen);
+            isSeen2 = itemView.findViewById(R.id.seen2);
         }
     }
 

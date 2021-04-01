@@ -1,6 +1,7 @@
 package com.android.socialmedia;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -12,12 +13,17 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -30,6 +36,7 @@ import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -39,10 +46,15 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -70,6 +82,8 @@ public class UserChatActivity extends AppCompatActivity {
     ImageButton imageButton, imageButton2;
     String url = "https://fcm.googleapis.com/fcm/send";
     RequestQueue requestQueue;
+    RelativeLayout relativeLayout;
+    Bitmap bitmap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +103,8 @@ public class UserChatActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recycler);
         chats = new ArrayList<>();
         circleImageView = findViewById(R.id.circleImageView);
+
+        relativeLayout = findViewById(R.id.relativeLayout);
 
         editText = findViewById(R.id.sendmess);
         editText.setOnClickListener(new View.OnClickListener() {
@@ -168,6 +184,28 @@ public class UserChatActivity extends AppCompatActivity {
             }
         });
         seenMessage(username);
+        relativeLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                visibleCardView();
+            }
+        });
+        editText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                visibleCardView();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
     }
 
     private void SelectImage() {
@@ -241,15 +279,16 @@ public class UserChatActivity extends AppCompatActivity {
     }
 
     public void sendmess(View view) {
+        visibleCardView();
         String message = editText.getText().toString().trim();
         if (message.isEmpty()) {
             Toast.makeText(this, "Can't send Empty Messages", Toast.LENGTH_SHORT).show();
         } else {
-            sendMessage(currentUsername, username, message);
+            sendMessage(currentUsername, username, message, "text");
         }
     }
 
-    private void sendMessage(String currentUsername, String username, String message) {
+    private void sendMessage(String currentUsername, String username, String message, String type) {
         final Date c = Calendar.getInstance().getTime();
         SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy h:mm:ss a", Locale.getDefault());
         final String formattedDate = df.format(c);
@@ -267,7 +306,8 @@ public class UserChatActivity extends AppCompatActivity {
         messages.put("Message", message);
         messages.put("Date", formattedDate);
         messages.put("isseen", false);
-        databaseReference.child(formattedDate).setValue(messages).addOnCompleteListener(new OnCompleteListener<Void>() {
+        messages.put("type", type);
+        databaseReference.child(String.valueOf(System.currentTimeMillis())).setValue(messages).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isComplete()) {
@@ -344,7 +384,7 @@ public class UserChatActivity extends AppCompatActivity {
             jsonObject1.put("body", sender + " : " + message);
 
             JSONObject jsonObject2 = new JSONObject();
-            jsonObject2.put("type","message");
+            jsonObject2.put("type", "message");
 
             jsonObject.put("notification", jsonObject1);
             jsonObject.put("data", jsonObject2);
@@ -437,6 +477,7 @@ public class UserChatActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        visibleCardView();
         finish();
         databaseReference.removeEventListener(valueEventListener);
     }
@@ -449,8 +490,58 @@ public class UserChatActivity extends AppCompatActivity {
     }
 
     public void visibleCardview(View view) {
+        visibleCardView();
+    }
+
+    private void visibleCardView() {
         imageButton.setVisibility(View.VISIBLE);
         imageButton2.setVisibility(View.GONE);
         cardView.setVisibility(View.INVISIBLE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case 1:
+                if (resultCode == RESULT_OK) {
+                    // Get the Uri of the selected file
+                    Uri uri = data.getData();
+                    try {
+                        bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    postImages(bitmap);
+                }
+                break;
+
+            case 0:
+                if (resultCode == RESULT_OK) {
+                    bitmap = (Bitmap) data.getExtras().get("data");
+                    postImages(bitmap);
+                }
+        }
+    }
+
+    private void postImages(Bitmap bitmap) {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+
+        final Date c = Calendar.getInstance().getTime();
+        SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss", Locale.getDefault());
+        final String formattedDate = df.format(c);
+
+
+        final StorageReference reference = FirebaseStorage.getInstance().getReference().
+                child("Images").
+                child(formattedDate + ".jpeg");
+
+        reference.putBytes(byteArrayOutputStream.toByteArray())
+                .addOnSuccessListener(taskSnapshot -> reference.getDownloadUrl().addOnSuccessListener(
+                        Imguri -> sendMessage(currentUsername, username, Imguri.toString(), "image")
+                ))
+                .addOnFailureListener(e -> {
+                });
     }
 }
