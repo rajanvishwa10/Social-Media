@@ -311,7 +311,11 @@ public class UserChatActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isComplete()) {
-                    sendNotification(message, username, currentUsername);
+                    if (type.equals("image")) {
+                        sendNotification("Photo", username, currentUsername);
+                    } else {
+                        sendNotification(message, username, currentUsername);
+                    }
                     final DatabaseReference databaseReference1 = FirebaseDatabase.getInstance().getReference("Chatlist")
                             .child(currentUsername).child(username);
                     HashMap<String, Object> hashMap = new HashMap<>();

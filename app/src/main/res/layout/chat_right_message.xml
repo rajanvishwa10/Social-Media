@@ -42,8 +42,22 @@
             android:text="sdasd"
             android:textColor="@color/white" />
 
-
     </androidx.cardview.widget.CardView>
+
+    <ImageButton
+        android:id="@+id/download"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_gravity="center"
+        android:scaleType="centerCrop"
+        android:layout_marginStart="5dp"
+        android:layout_centerVertical="true"
+        android:layout_toStartOf="@id/cardView"
+        android:background="@android:color/transparent"
+        android:elevation="15sp"
+        android:visibility="gone"
+        android:contentDescription="download"
+        android:src="@drawable/ic_baseline_download_24" />
 
     <TextView
         android:id="@+id/seen2"

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -85,7 +88,11 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
                     String currentUsername = sharedPreferences.getString("username", "");
                     if (chat.getReceiver().equals(user.getId()) && chat.getSender().equals(currentUsername) ||
                             chat.getReceiver().equals(currentUsername) && chat.getSender().equals(user.getId())) {
-                        lastmess = chat.getMessage();
+                        if (chat.getType().equals("image")) {
+                            lastmess = "Photo";
+                        } else {
+                            lastmess = chat.getMessage();
+                        }
                         holder.textView2.setText(lastmess);
                         if (!chat.getSender().equals(currentUsername)) {
                             if (!chat.isIsseen()) {
@@ -112,6 +119,10 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
                     holder.linearLayout.setVisibility(View.VISIBLE);
                     holder.textView2.setVisibility(View.VISIBLE);
                     holder.textView2.setText(lastmess);
+                    if(lastmess.equals("Photo")) {
+                        Drawable drawable = ContextCompat.getDrawable(context, R.drawable.ic_baseline_image_24);
+                        holder.textView2.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
+                    }
                 }
                 lastmess = "default";
 
