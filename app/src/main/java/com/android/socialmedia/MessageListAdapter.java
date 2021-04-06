@@ -90,8 +90,10 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
                             chat.getReceiver().equals(currentUsername) && chat.getSender().equals(user.getId())) {
                         if (chat.getType().equals("image")) {
                             lastmess = "Photo";
-                        } else {
+                        } else if (chat.getType().equals("text")) {
                             lastmess = chat.getMessage();
+                        } else {
+                            lastmess = "Document";
                         }
                         holder.textView2.setText(lastmess);
                         if (!chat.getSender().equals(currentUsername)) {
@@ -119,8 +121,11 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
                     holder.linearLayout.setVisibility(View.VISIBLE);
                     holder.textView2.setVisibility(View.VISIBLE);
                     holder.textView2.setText(lastmess);
-                    if(lastmess.equals("Photo")) {
+                    if (lastmess.equals("Photo")) {
                         Drawable drawable = ContextCompat.getDrawable(context, R.drawable.ic_baseline_image_24);
+                        holder.textView2.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
+                    } else if (lastmess.equals("Document")) {
+                        Drawable drawable = ContextCompat.getDrawable(context, R.drawable.ic_baseline_insert_drive_file_24);
                         holder.textView2.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
                     }
                 }

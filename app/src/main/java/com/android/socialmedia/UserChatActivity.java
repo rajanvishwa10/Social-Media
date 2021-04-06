@@ -6,13 +6,16 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
+import androidx.documentfile.provider.DocumentFile;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -35,6 +38,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -48,6 +52,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
@@ -71,7 +76,7 @@ public class UserChatActivity extends AppCompatActivity {
     CardView cardView;
     EditText editText;
     LinearLayout imageLinearLayout, videoLinearLayout, docLinearLayout;
-    String username, currentUsername;
+    String username, currentUsername, path;
     Toolbar toolbar;
     DatabaseReference myRef;
     CircleImageView circleImageView;
@@ -90,7 +95,7 @@ public class UserChatActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_chat);
-        
+
         requestQueue = Volley.newRequestQueue(this);
 
         cardView = findViewById(R.id.cardView);
@@ -131,7 +136,7 @@ public class UserChatActivity extends AppCompatActivity {
         });
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext(),
-                RecyclerView.VERTICAL,false);
+                RecyclerView.VERTICAL, false);
         linearLayoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(linearLayoutManager);
 
@@ -165,25 +170,19 @@ public class UserChatActivity extends AppCompatActivity {
             }
         });
 
-        imageLinearLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SelectImage();
-            }
+        imageLinearLayout.setOnClickListener(v -> {
+            visibleCardView();
+            SelectImage();
         });
-        videoLinearLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selectVideo();
-            }
+        videoLinearLayout.setOnClickListener(v -> {
+            visibleCardView();
+            selectVideo();
         });
-        docLinearLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                intent.setType("file/*");
-                startActivityForResult(intent.createChooser(intent, "Select file"), 4);
-            }
+        docLinearLayout.setOnClickListener(v -> {
+            visibleCardView();
+            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+            intent.setType("application/*");
+            startActivityForResult(intent.createChooser(intent, "Select file"), 4);
         });
         seenMessage(username);
         relativeLayout.setOnClickListener(new View.OnClickListener() {
@@ -286,11 +285,11 @@ public class UserChatActivity extends AppCompatActivity {
         if (message.isEmpty()) {
             Toast.makeText(this, "Can't send Empty Messages", Toast.LENGTH_SHORT).show();
         } else {
-            sendMessage(currentUsername, username, message, "text");
+            sendMessage(currentUsername, username, message, "text", "");
         }
     }
 
-    private void sendMessage(String currentUsername, String username, String message, String type) {
+    private void sendMessage(String currentUsername, String username, String message, String type, String fileName) {
         final Date c = Calendar.getInstance().getTime();
         SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy h:mm:ss a", Locale.getDefault());
         final String formattedDate = df.format(c);
@@ -309,6 +308,7 @@ public class UserChatActivity extends AppCompatActivity {
         messages.put("Date", formattedDate);
         messages.put("isseen", false);
         messages.put("type", type);
+        messages.put("name", fileName);
         databaseReference.child(String.valueOf(System.currentTimeMillis())).setValue(messages).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
@@ -376,7 +376,6 @@ public class UserChatActivity extends AppCompatActivity {
 
             }
         });
-
 
     }
 
@@ -527,7 +526,41 @@ public class UserChatActivity extends AppCompatActivity {
                     bitmap = (Bitmap) data.getExtras().get("data");
                     postImages(bitmap);
                 }
+                break;
+
+            case 4:
+                if (resultCode == RESULT_OK) {
+                    Uri uri = data.getData();
+                    System.out.println(getPath(uri));
+                    postFile(uri, getPath(uri));
+                }
+                break;
         }
+    }
+
+    private void postFile(Uri uri, String fileName) {
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference();
+        storageReference.child("Files").child(fileName).putFile(uri)
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        Task<Uri> uriTask = taskSnapshot.getStorage().getDownloadUrl();
+                        while (!uriTask.isComplete()) ;
+                        Uri uri = uriTask.getResult();
+                        System.out.println(uri.toString());
+                        if (uriTask.isComplete()) {
+                            sendMessage(currentUsername, username, uri.toString(), "file", fileName);
+                        }
+                    }
+                })
+                .addOnFailureListener(e -> {
+                })
+                .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onProgress(@NonNull UploadTask.TaskSnapshot snapshot) {
+                        Toast.makeText(UserChatActivity.this, "Uploading", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     private void postImages(Bitmap bitmap) {
@@ -538,16 +571,33 @@ public class UserChatActivity extends AppCompatActivity {
         SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss", Locale.getDefault());
         final String formattedDate = df.format(c);
 
+        String fileName = formattedDate + ".jpeg";
 
         final StorageReference reference = FirebaseStorage.getInstance().getReference().
                 child("Images").
-                child(formattedDate + ".jpeg");
+                child(fileName);
 
         reference.putBytes(byteArrayOutputStream.toByteArray())
-                .addOnSuccessListener(taskSnapshot -> reference.getDownloadUrl().addOnSuccessListener(
-                        Imguri -> sendMessage(currentUsername, username, Imguri.toString(), "image")
-                ))
+                .addOnSuccessListener(taskSnapshot -> {
+                    reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+                            sendMessage(currentUsername, username, uri.toString(), "image", fileName);
+                            System.out.println(uri);
+                        }
+                    });
+
+                })
                 .addOnFailureListener(e -> {
+                })
+                .addOnProgressListener(snapshot -> {
+                    Toast.makeText(this, "Sending", Toast.LENGTH_SHORT).show();
                 });
+    }
+
+    String getPath(Uri uri) {
+        DocumentFile documentFile = DocumentFile.fromSingleUri(this, uri);
+        path = documentFile.getName();
+        return path;
     }
 }

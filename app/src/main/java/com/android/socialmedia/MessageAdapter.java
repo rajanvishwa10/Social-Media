@@ -32,6 +32,8 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -94,7 +96,8 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             } else {
                 holder.isSeen2.setVisibility(View.GONE);
             }
-            Glide.with(context).load(chatMessage).into(holder.imageView);
+            Glide.with(context).load(chatMessage).transform(new CenterCrop(), new RoundedCorners(30))
+                    .into(holder.imageView);
             holder.imageView.setOnClickListener(v -> {
                 Intent intent = new Intent(context, ImageViewActivity.class);
                 intent.putExtra("url", chatMessage);
@@ -116,7 +119,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
                         request.setAllowedOverRoaming(true);
                         request.allowScanningByMediaScanner();
                         request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-                        String fileName = String.format("%d.jpg", System.currentTimeMillis());
+                        String fileName = chat.getName();
                         request.setDestinationInExternalPublicDir(Environment.DIRECTORY_PICTURES, "/" +
                                 context.getResources().getString(R.string.app_name) + "/" + fileName);
                         request.setMimeType("image/*");
@@ -128,7 +131,66 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
                     }
                 }
             });
-        }else{
+
+        }else if(type.equals("file")){
+            holder.cardView.setVisibility(View.GONE);
+            holder.cardView2.setVisibility(View.VISIBLE);
+            holder.linearLayout.setVisibility(View.GONE);
+            holder.imageButton.setVisibility(View.GONE);
+            holder.imageTime.setVisibility(View.GONE);
+            holder.isSeen3.setVisibility(View.VISIBLE);
+            holder.fileTime.setText(newTime[1] + " " + newTime[2]);
+            holder.isSeen.setVisibility(View.GONE);
+            if (position == chats.size() - 1) {
+                holder.isSeen3.setVisibility(View.VISIBLE);
+                if (chat.isIsseen()) {
+                    holder.isSeen3.setText("Seen");
+                } else {
+                    holder.isSeen3.setText("Delivered");
+                }
+            } else {
+                holder.isSeen3.setVisibility(View.GONE);
+            }
+//            Glide.with(context).load(chatMessage).into(holder.imageView);
+            String fileName = chat.getName();
+            holder.fileName.setText(fileName);
+            String[] fileType = fileName.split("\\.");
+            holder.fileType.setText(fileType[1]);
+            holder.imageButton2.setOnClickListener(v -> {
+
+                if(checkPermission()) {
+                    try {
+                        Toast.makeText(context, "Download Started", Toast.LENGTH_SHORT).show();
+                        Uri uri = Uri.parse(chatMessage);
+                        DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+                        DownloadManager.Request request = new DownloadManager.Request(uri);
+                        request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI |
+                                DownloadManager.Request.NETWORK_MOBILE);
+                        request.setTitle("File Downloaded");
+                        request.setDescription("File is Ready");
+                        request.setAllowedOverMetered(true);
+                        request.setAllowedOverRoaming(true);
+                        request.allowScanningByMediaScanner();
+                        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+
+                        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOCUMENTS, "/" +
+                                context.getResources().getString(R.string.app_name) + "/" + fileName);
+                        if(fileType[1].equals("apk")){
+                            request.setMimeType("application/apk");
+                        }else{
+                            request.setMimeType("application/"+fileType[1]);
+                        }
+                        downloadManager.enqueue(request);
+
+                        //holder.imageButton.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_baseline_download_done_24));
+                    } catch (Exception e) {
+                        Toast.makeText(context, "Download Failed", Toast.LENGTH_SHORT).show();
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+        else{
             holder.cardView.setVisibility(View.GONE);
             holder.linearLayout.setVisibility(View.VISIBLE);
 
@@ -189,11 +251,12 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        TextView show_message, time, imageTime, isSeen, isSeen2;
+        TextView show_message, time, imageTime, isSeen,
+                isSeen2, isSeen3, fileName, fileTime, fileType;
         ImageView imageView;
-        ImageButton imageButton;
+        ImageButton imageButton, imageButton2;
         LinearLayout linearLayout;
-        CardView cardView;
+        CardView cardView,cardView2;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -203,10 +266,16 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             imageView = itemView.findViewById(R.id.image);
             linearLayout = itemView.findViewById(R.id.linearLayout);
             cardView = itemView.findViewById(R.id.cardView);
+            cardView2 = itemView.findViewById(R.id.cardView2);
             imageTime = itemView.findViewById(R.id.imageTime);
             isSeen = itemView.findViewById(R.id.seen);
             isSeen2 = itemView.findViewById(R.id.seen2);
+            isSeen3 = itemView.findViewById(R.id.seen3);
+            fileName = itemView.findViewById(R.id.fileName);
             imageButton = itemView.findViewById(R.id.download);
+            imageButton2 = itemView.findViewById(R.id.fileDownload);
+            fileTime = itemView.findViewById(R.id.fileTime);
+            fileType = itemView.findViewById(R.id.fileType);
         }
     }
 

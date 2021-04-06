@@ -1,19 +1,28 @@
 package com.android.socialmedia;
 
 public class Chats {
-    String Sender, Receiver, Message, Date, type;
+    String Sender, Receiver, Message, Date, type, name;
     boolean isseen;
 
     public Chats() {
     }
 
-    public Chats(String sender, String receiver, String message, String date, boolean isseen, String type) {
+    public Chats(String sender, String receiver, String message, String date, boolean isseen, String type, String name) {
         Sender = sender;
         Receiver = receiver;
         Message = message;
         Date = date;
         this.isseen = isseen;
         this.type = type;
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getType() {

@@ -22,6 +22,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -44,12 +45,12 @@ import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity {
     String username;
-//    final Fragment fragment1 = new HomePageFragment();
+    //    final Fragment fragment1 = new HomePageFragment();
 //    final Fragment fragment2 = new SearchFragment();
 //    final Fragment fragment3 = new ImageFragment();
 //    final Fragment fragment4 = new ProfileFragment();
     Fragment fragment = null;
-
+    float x1, x2, y1, y2;
     //final FragmentManager fm = getSupportFragmentManager();
 
     @RequiresApi(api = Build.VERSION_CODES.N_MR1)
@@ -238,10 +239,11 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.bottom_nav_menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
+
+
 }
