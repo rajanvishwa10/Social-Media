@@ -123,16 +123,22 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
                     holder.linearLayout.setVisibility(View.VISIBLE);
                     holder.textView2.setVisibility(View.VISIBLE);
                     holder.textView2.setText(lastmess);
-                    if (lastmess.equals("Photo")) {
-                        Drawable drawable = ContextCompat.getDrawable(context, R.drawable.ic_baseline_image_24);
-                        holder.textView2.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
-                    } else if (lastmess.equals("Document")) {
-                        Drawable drawable = ContextCompat.getDrawable(context, R.drawable.ic_baseline_insert_drive_file_24);
-                        holder.textView2.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
-                    }
-                    else if (lastmess.equals("Video")) {
-                        Drawable drawable = ContextCompat.getDrawable(context, R.drawable.ic_baseline_play_circle_outline_24);
-                        holder.textView2.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
+                    switch (lastmess) {
+                        case "Photo": {
+                            Drawable drawable = ContextCompat.getDrawable(context, R.drawable.ic_baseline_image_24);
+                            holder.textView2.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
+                            break;
+                        }
+                        case "Document": {
+                            Drawable drawable = ContextCompat.getDrawable(context, R.drawable.ic_baseline_insert_drive_file_24);
+                            holder.textView2.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
+                            break;
+                        }
+                        case "Video": {
+                            Drawable drawable = ContextCompat.getDrawable(context, R.drawable.ic_baseline_play_circle_outline_24);
+                            holder.textView2.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
+                            break;
+                        }
                     }
                 }
                 lastmess = "default";
