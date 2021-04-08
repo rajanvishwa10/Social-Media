@@ -3,16 +3,19 @@ package com.android.socialmedia;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.DownloadManager;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,6 +37,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.bumptech.glide.request.RequestOptions;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -79,7 +83,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         String[] newTime = time.split("\\s");
 
         String type = chat.getType();
-        if (type.equals("image")) {
+        if (type.equals("image") || type.equals("video")) {
             holder.cardView.setVisibility(View.VISIBLE);
             holder.linearLayout.setVisibility(View.GONE);
             holder.imageButton.setVisibility(View.VISIBLE);
@@ -96,16 +100,35 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             } else {
                 holder.isSeen2.setVisibility(View.GONE);
             }
-            Glide.with(context).load(chatMessage).transform(new CenterCrop(), new RoundedCorners(30))
-                    .into(holder.imageView);
-            holder.imageView.setOnClickListener(v -> {
-                Intent intent = new Intent(context, ImageViewActivity.class);
-                intent.putExtra("url", chatMessage);
-                context.startActivity(intent);
-            });
+            if (type.equals("image")) {
+                holder.play.setVisibility(View.GONE);
+                Glide.with(context).load(chatMessage).transform(new CenterCrop(), new RoundedCorners(30))
+                        .into(holder.imageView);
+                holder.imageView.setOnClickListener(v -> {
+                    Intent intent = new Intent(context, ImageViewActivity.class);
+                    intent.putExtra("url", chatMessage);
+                    context.startActivity(intent);
+                });
+            }else{
+                holder.play.setVisibility(View.VISIBLE);
+                holder.imageView.setAlpha(0.5f);
+                holder.imageView.setOnClickListener(null);
+                Glide.with(context)
+                        .load(chatMessage)
+                        .apply(new RequestOptions())
+                        .thumbnail(Glide.with(context).load(chatMessage))
+                        .into(holder.imageView);
+                holder.play.setOnClickListener(v -> {
+                    Toast.makeText(context, "imageClicked", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(context, VideoActivity.class);
+                    intent.putExtra("videoUri", chatMessage);
+                    context.startActivity(intent);
+                });
+            }
+
             holder.imageButton.setOnClickListener(v -> {
 
-                if(checkPermission()) {
+                if (checkPermission()) {
                     try {
                         Toast.makeText(context, "Download Started", Toast.LENGTH_SHORT).show();
                         Uri uri = Uri.parse(chatMessage);
@@ -113,16 +136,25 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
                         DownloadManager.Request request = new DownloadManager.Request(uri);
                         request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI |
                                 DownloadManager.Request.NETWORK_MOBILE);
-                        request.setTitle("Image Downloaded");
-                        request.setDescription("Image is Ready");
+                        if (type.equals("image")) {
+                            request.setTitle("Image Downloaded");
+                            request.setDescription("Image is Ready");
+                            request.setMimeType("image/*");
+                            String fileName = chat.getName();
+                            request.setDestinationInExternalPublicDir(Environment.DIRECTORY_PICTURES, "/" +
+                                    context.getResources().getString(R.string.app_name) + "/" + fileName);
+                        } else {
+                            request.setTitle("Video Downloaded");
+                            request.setDescription("Video is Ready");
+                            request.setMimeType("video/*");
+                            String fileName = chat.getName();
+                            request.setDestinationInExternalPublicDir(Environment.DIRECTORY_MOVIES, "/" +
+                                    context.getResources().getString(R.string.app_name) + "/" + fileName);
+                        }
                         request.setAllowedOverMetered(true);
                         request.setAllowedOverRoaming(true);
                         request.allowScanningByMediaScanner();
                         request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-                        String fileName = chat.getName();
-                        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_PICTURES, "/" +
-                                context.getResources().getString(R.string.app_name) + "/" + fileName);
-                        request.setMimeType("image/*");
                         downloadManager.enqueue(request);
                         holder.imageButton.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_baseline_download_done_24));
                     } catch (Exception e) {
@@ -132,7 +164,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
                 }
             });
 
-        }else if(type.equals("file")){
+        } else if (type.equals("file")) {
             holder.cardView.setVisibility(View.GONE);
             holder.cardView2.setVisibility(View.VISIBLE);
             holder.linearLayout.setVisibility(View.GONE);
@@ -158,7 +190,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             holder.fileType.setText(fileType[1]);
             holder.imageButton2.setOnClickListener(v -> {
 
-                if(checkPermission()) {
+                if (checkPermission()) {
                     try {
                         Toast.makeText(context, "Download Started", Toast.LENGTH_SHORT).show();
                         Uri uri = Uri.parse(chatMessage);
@@ -175,10 +207,10 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
                         request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOCUMENTS, "/" +
                                 context.getResources().getString(R.string.app_name) + "/" + fileName);
-                        if(fileType[1].equals("apk")){
+                        if (fileType[1].equals("apk")) {
                             request.setMimeType("application/apk");
-                        }else{
-                            request.setMimeType("application/"+fileType[1]);
+                        } else {
+                            request.setMimeType("application/" + fileType[1]);
                         }
                         downloadManager.enqueue(request);
 
@@ -189,8 +221,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
                     }
                 }
             });
-        }
-        else{
+        } else {
             holder.cardView.setVisibility(View.GONE);
             holder.linearLayout.setVisibility(View.VISIBLE);
 
@@ -213,11 +244,9 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     }
 
 
-    public boolean checkPermission()
-    {
+    public boolean checkPermission() {
         int currentAPIVersion = Build.VERSION.SDK_INT;
-        if(currentAPIVersion>=android.os.Build.VERSION_CODES.M)
-        {
+        if (currentAPIVersion >= android.os.Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 if (ActivityCompat.shouldShowRequestPermissionRationale((Activity) context, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                     AlertDialog.Builder alertBuilder = new AlertDialog.Builder(context);
@@ -227,13 +256,13 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
                     alertBuilder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                         @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
                         public void onClick(DialogInterface dialog, int which) {
-                            ActivityCompat.requestPermissions((Activity)context, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
+                            ActivityCompat.requestPermissions((Activity) context, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
                         }
                     });
                     AlertDialog alert = alertBuilder.create();
                     alert.show();
                 } else {
-                    ActivityCompat.requestPermissions((Activity)context, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
+                    ActivityCompat.requestPermissions((Activity) context, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
                 }
                 return false;
             } else {
@@ -254,9 +283,9 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         TextView show_message, time, imageTime, isSeen,
                 isSeen2, isSeen3, fileName, fileTime, fileType;
         ImageView imageView;
-        ImageButton imageButton, imageButton2;
+        ImageButton imageButton, imageButton2,play;
         LinearLayout linearLayout;
-        CardView cardView,cardView2;
+        CardView cardView, cardView2;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -274,6 +303,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             fileName = itemView.findViewById(R.id.fileName);
             imageButton = itemView.findViewById(R.id.download);
             imageButton2 = itemView.findViewById(R.id.fileDownload);
+            play = itemView.findViewById(R.id.video_play);
             fileTime = itemView.findViewById(R.id.fileTime);
             fileType = itemView.findViewById(R.id.fileType);
         }

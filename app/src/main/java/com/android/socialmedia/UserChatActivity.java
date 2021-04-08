@@ -313,10 +313,19 @@ public class UserChatActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isComplete()) {
-                    if (type.equals("image")) {
-                        sendNotification("Photo", username, currentUsername);
-                    } else {
-                        sendNotification(message, username, currentUsername);
+                    switch (type) {
+                        case "image":
+                            sendNotification("Photo", username, currentUsername);
+                            break;
+                        case "video":
+                            sendNotification("Video", username, currentUsername);
+                            break;
+                        case "file":
+                            sendNotification("File", username, currentUsername);
+                            break;
+                        default:
+                            sendNotification(message, username, currentUsername);
+                            break;
                     }
                     final DatabaseReference databaseReference1 = FirebaseDatabase.getInstance().getReference("Chatlist")
                             .child(currentUsername).child(username);
@@ -395,17 +404,9 @@ public class UserChatActivity extends AppCompatActivity {
             jsonObject.put("data", jsonObject2);
 
             JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, jsonObject,
-                    new Response.Listener<JSONObject>() {
-                        @Override
-                        public void onResponse(JSONObject response) {
-                            System.out.println("response" + response);
-                        }
-                    }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
+                    response -> System.out.println("response" + response), error -> {
 
-                }
-            }) {
+                    }) {
                 @Override
                 public Map<String, String> getHeaders() throws AuthFailureError {
                     Map<String, String> map = new HashMap<>();
@@ -487,7 +488,6 @@ public class UserChatActivity extends AppCompatActivity {
         databaseReference.removeEventListener(valueEventListener);
     }
 
-
     public void attachDocument(View view) {
         imageButton2.setVisibility(View.VISIBLE);
         imageButton.setVisibility(View.GONE);
@@ -531,11 +531,43 @@ public class UserChatActivity extends AppCompatActivity {
             case 4:
                 if (resultCode == RESULT_OK) {
                     Uri uri = data.getData();
-                    System.out.println(getPath(uri));
                     postFile(uri, getPath(uri));
                 }
                 break;
+
+            case 3:
+            case 2:
+                if (resultCode == RESULT_OK) {
+                    Uri uri = data.getData();
+                    postVideo(uri, getPath(uri));
+                }
+                break;
         }
+    }
+
+    private void postVideo(Uri uri, String fileName) {
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference();
+        storageReference.child("Video").child(fileName).putFile(uri)
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        Task<Uri> uriTask = taskSnapshot.getStorage().getDownloadUrl();
+                        while (!uriTask.isComplete()) ;
+                        Uri uri = uriTask.getResult();
+                        System.out.println(uri.toString());
+                        if (uriTask.isComplete()) {
+                            sendMessage(currentUsername, username, uri.toString(), "video", fileName);
+                        }
+                    }
+                })
+                .addOnFailureListener(e -> {
+                })
+                .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onProgress(@NonNull UploadTask.TaskSnapshot snapshot) {
+                        Toast.makeText(UserChatActivity.this, "Uploading", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     private void postFile(Uri uri, String fileName) {

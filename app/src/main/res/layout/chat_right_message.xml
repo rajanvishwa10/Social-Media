@@ -42,6 +42,18 @@
             android:text="sdasd"
             android:textColor="@color/white" />
 
+        <ImageButton
+            android:id="@+id/video_play"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:scaleType="centerCrop"
+            android:elevation="20dp"
+            android:visibility="gone"
+            android:background="@color/transparent"
+            android:src="@drawable/ic_baseline_play_circle_outline_24"
+            android:layout_gravity="center"
+            />
+
     </androidx.cardview.widget.CardView>
 
     <ImageButton
