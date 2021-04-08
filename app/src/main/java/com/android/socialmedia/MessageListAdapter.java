@@ -92,6 +92,8 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
                             lastmess = "Photo";
                         } else if (chat.getType().equals("text")) {
                             lastmess = chat.getMessage();
+                        } else if (chat.getType().equals("video")) {
+                            lastmess = "Video";
                         } else {
                             lastmess = "Document";
                         }
@@ -126,6 +128,10 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
                         holder.textView2.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
                     } else if (lastmess.equals("Document")) {
                         Drawable drawable = ContextCompat.getDrawable(context, R.drawable.ic_baseline_insert_drive_file_24);
+                        holder.textView2.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
+                    }
+                    else if (lastmess.equals("Video")) {
+                        Drawable drawable = ContextCompat.getDrawable(context, R.drawable.ic_baseline_play_circle_outline_24);
                         holder.textView2.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
                     }
                 }
