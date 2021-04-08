@@ -44,7 +44,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHolder> {
     public static final int MSG_TYPE_LEFT = 0;
@@ -73,6 +77,27 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
     }
 
+    private String checkDate(String d2) {
+        Date date = Calendar.getInstance().getTime();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+        String d1 = dateFormat.format(date);
+        if (d1.compareTo(d2) > 0) {
+
+            // When Date d1 > Date d2
+            return "d1>d2";
+        } else if (d1.compareTo(d2) < 0) {
+
+            // When Date d1 < Date d2
+            return "d1<d2";
+        } else if (d1.compareTo(d2) == 0) {
+
+            return "today";
+        }
+
+        return null;
+    }
+
+
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
 
@@ -82,9 +107,41 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         final String time = chat.getDate();
         String[] newTime = time.split("\\s");
 
+        try {
+
+            String prevTime = chats.get(position - 1).getDate();
+
+            String[] prevDate = prevTime.split("\\s");
+
+            if (newTime[0].equals(prevDate[0])) {
+                holder.date.setVisibility(View.GONE);
+            }else{
+                holder.date.setVisibility(View.VISIBLE);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        String compareDate;
+        try {
+            compareDate = checkDate(newTime[0]);
+            switch (compareDate) {
+                case "d1<d2":
+                case "d1>d2":
+                    holder.date.setText(newTime[0]);
+                    break;
+                case "today":
+                    holder.date.setText("Today");
+                    break;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         String type = chat.getType();
         if (type.equals("image") || type.equals("video")) {
             holder.cardView.setVisibility(View.VISIBLE);
+            holder.cardView2.setVisibility(View.GONE);
             holder.linearLayout.setVisibility(View.GONE);
             holder.imageButton.setVisibility(View.VISIBLE);
             holder.imageTime.setVisibility(View.VISIBLE);
@@ -109,7 +166,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
                     intent.putExtra("url", chatMessage);
                     context.startActivity(intent);
                 });
-            }else{
+            } else {
                 holder.play.setVisibility(View.VISIBLE);
                 holder.imageView.setAlpha(0.5f);
                 holder.imageView.setOnClickListener(null);
@@ -223,6 +280,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             });
         } else {
             holder.cardView.setVisibility(View.GONE);
+            holder.cardView2.setVisibility(View.GONE);
             holder.linearLayout.setVisibility(View.VISIBLE);
 
             holder.imageButton.setVisibility(View.GONE);
@@ -281,9 +339,10 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
         TextView show_message, time, imageTime, isSeen,
-                isSeen2, isSeen3, fileName, fileTime, fileType;
+                isSeen2, isSeen3, fileName, fileTime, fileType,
+                date;
         ImageView imageView;
-        ImageButton imageButton, imageButton2,play;
+        ImageButton imageButton, imageButton2, play;
         LinearLayout linearLayout;
         CardView cardView, cardView2;
 
@@ -306,6 +365,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             play = itemView.findViewById(R.id.video_play);
             fileTime = itemView.findViewById(R.id.fileTime);
             fileType = itemView.findViewById(R.id.fileType);
+            date = itemView.findViewById(R.id.textViewDate);
         }
     }
 
