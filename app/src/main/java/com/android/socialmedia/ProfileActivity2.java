@@ -292,9 +292,9 @@ public class ProfileActivity2 extends AppCompatActivity {
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         ImageList imageList1 = dataSnapshot.getValue(ImageList.class);
                         imageList.add(imageList1);
-                        Collections.reverse(imageList);
-                        System.out.println("Images = " + dataSnapshot.child("Image").getValue(String.class));
+//                        System.out.println("Images = " + dataSnapshot.child("Image").getValue(String.class));
                     }
+                    Collections.reverse(imageList);
                     galleryImageAdapter = new GalleryImageAdapter(ProfileActivity2.this, imageList, username);
                     recyclerView.setAdapter(galleryImageAdapter);
                 } else {

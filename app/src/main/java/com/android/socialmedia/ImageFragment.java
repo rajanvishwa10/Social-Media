@@ -49,7 +49,7 @@ import java.util.Locale;
 import java.util.Map;
 
 public class ImageFragment extends Fragment {
-   // Uri uri;
+    // Uri uri;
     Bitmap bitmap;
     ImageView imageView;
     ProgressDialog progressDialog;
@@ -93,14 +93,19 @@ public class ImageFragment extends Fragment {
                 progressDialog.show();
                 EditText editText = view.findViewById(R.id.editText);
                 String caption = editText.getText().toString().trim();
-                uploadImage(bitmap, caption, username);
+                if (bitmap == null) {
+                    progressDialog.dismiss();
+                    Toast.makeText(getContext(), "Choose an Image", Toast.LENGTH_SHORT).show();
+                } else {
+                    uploadImage(bitmap, caption, username);
+                }
             }
         });
         imageView = view.findViewById(R.id.imageView);
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CropImage.activity().start(getContext(),ImageFragment.this);
+                CropImage.activity().start(getContext(), ImageFragment.this);
             }
 //                BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(
 //                        getContext(), R.style.BottomSheetDialogTheme
@@ -166,7 +171,7 @@ public class ImageFragment extends Fragment {
                                     public void onSuccess(Uri Imguri) {
                                         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Images")
                                                 //.child(username)
-                                                .child(formattedDate);
+                                                .child(String.valueOf(System.currentTimeMillis()));
 
                                         Map<String, Object> updates = new HashMap<>();
 
@@ -276,7 +281,7 @@ public class ImageFragment extends Fragment {
         if (requestCode == CropImage.PICK_IMAGE_CHOOSER_REQUEST_CODE
                 && resultCode == Activity.RESULT_OK) {
 
-            Uri uri = CropImage.getPickImageResultUri(getContext(),data);
+            Uri uri = CropImage.getPickImageResultUri(getContext(), data);
             System.out.println(uri);
             startCrop(uri);
 
@@ -310,6 +315,7 @@ public class ImageFragment extends Fragment {
             }
         }
     }
+
     private void startCrop(Uri uri) {
         CropImage.activity(uri).setGuidelines(CropImageView.Guidelines.ON)
                 .setMultiTouchEnabled(true)

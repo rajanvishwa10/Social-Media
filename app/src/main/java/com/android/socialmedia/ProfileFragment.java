@@ -314,9 +314,11 @@ public class ProfileFragment extends Fragment {
                                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                                     ImageList imageList1 = dataSnapshot.getValue(ImageList.class);
                                     imageList.add(imageList1);
-                                    Collections.reverse(imageList);
+                                    System.out.println(imageList);
                                 }
-                                recyclerView.setBackground(null);
+                                Collections.reverse(imageList);
+                                System.out.println(imageList);
+//                                recyclerView.setBackground(null);
                                 galleryImageAdapter = new GalleryImageAdapter(getContext(), imageList, username);
                                 recyclerView.setAdapter(galleryImageAdapter);
                             }

@@ -1,20 +1,21 @@
 package com.android.socialmedia;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -23,9 +24,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class MessageActivity extends AppCompatActivity {
@@ -60,10 +60,11 @@ public class MessageActivity extends AppCompatActivity {
                     String currentUsername = dataSnapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Username").getValue(String.class);
                     SharedPreferences sharedPreferences = getSharedPreferences("username", Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putString("username",currentUsername);
+                    editor.putString("username", currentUsername);
                     editor.apply();
                     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
                     databaseReference.child("Chatlist").child(currentUsername).addValueEventListener(new ValueEventListener() {
+                        @RequiresApi(api = Build.VERSION_CODES.N)
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             if (snapshot.exists()) {
@@ -71,12 +72,13 @@ public class MessageActivity extends AppCompatActivity {
                                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                                     MessageUser messageUser = dataSnapshot.getValue(MessageUser.class);
                                     userList.add(messageUser);
+                                    Collections.sort(userList);
+                                    Collections.reverse(userList);
                                 }
                                 messageAdapter = new MessageListAdapter(getApplicationContext(), userList);
                                 recyclerView.setAdapter(messageAdapter);
                                 messageAdapter.notifyDataSetChanged();
-                            }
-                            else{
+                            } else {
                                 textView.setVisibility(View.VISIBLE);
                             }
                         }

@@ -297,8 +297,7 @@ public class UserChatActivity extends AppCompatActivity {
         //.child(Sender + " " + Receiver)
         //.child(Sender + " " + Receiver + " " + formattedDate);
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy h:mm:ss:SSS", Locale.getDefault());
-        String date = dateFormat.format(c);
+        long timeInMillIs = System.currentTimeMillis();
         //System.out.println(date);
 
         Map<String, Object> messages = new HashMap<>();
@@ -309,7 +308,7 @@ public class UserChatActivity extends AppCompatActivity {
         messages.put("isseen", false);
         messages.put("type", type);
         messages.put("name", fileName);
-        databaseReference.child(String.valueOf(System.currentTimeMillis())).setValue(messages).addOnCompleteListener(new OnCompleteListener<Void>() {
+        databaseReference.child(String.valueOf(timeInMillIs)).setValue(messages).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isComplete()) {
@@ -330,7 +329,7 @@ public class UserChatActivity extends AppCompatActivity {
                     final DatabaseReference databaseReference1 = FirebaseDatabase.getInstance().getReference("Chatlist")
                             .child(currentUsername).child(username);
                     HashMap<String, Object> hashMap = new HashMap<>();
-                    hashMap.put("date", date);
+                    hashMap.put("date", timeInMillIs);
                     databaseReference1.updateChildren(hashMap);
 
                     final DatabaseReference databaseReference2 = FirebaseDatabase.getInstance().getReference("Chatlist")
@@ -358,7 +357,7 @@ public class UserChatActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (!snapshot.exists()) {
                     databaseReference1.child("id").setValue(username);
-                    databaseReference1.child("date").setValue(date);
+                    databaseReference1.child("date").setValue(timeInMillIs);
                 }
             }
 
@@ -376,7 +375,7 @@ public class UserChatActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (!snapshot.exists()) {
                     databaseReference2.child("id").setValue(currentUsername);
-                    databaseReference2.child("date").setValue(date);
+                    databaseReference2.child("date").setValue(timeInMillIs);
                 }
             }
 
@@ -461,10 +460,10 @@ public class UserChatActivity extends AppCompatActivity {
                             chats.add(chat);
 
                         }
-                        messageAdapter = new MessageAdapter(UserChatActivity.this, chats);
-                        recyclerView.setAdapter(messageAdapter);
-                        messageAdapter.notifyDataSetChanged();
                     }
+                    messageAdapter = new MessageAdapter(UserChatActivity.this, chats);
+                    recyclerView.setAdapter(messageAdapter);
+                    messageAdapter.notifyDataSetChanged();
                     //System.out.println("snap"+snapshot.getChildren());
 
                 } else {

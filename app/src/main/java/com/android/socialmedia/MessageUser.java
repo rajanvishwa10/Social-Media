@@ -1,12 +1,13 @@
 package com.android.socialmedia;
 
-public class MessageUser {
-    String id, date;
+public class MessageUser implements Comparable<MessageUser>{
+    String id;
+    Long date;
 
     public MessageUser() {
     }
 
-    public MessageUser(String id, String date) {
+    public MessageUser(String id, Long date) {
         this.id = id;
         this.date = date;
     }
@@ -19,11 +20,19 @@ public class MessageUser {
         this.id = id;
     }
 
-    public String getDate() {
+    public Long getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    public void setDate(Long date) {
         this.date = date;
+    }
+
+    @Override
+    public int compareTo(MessageUser o) {
+        if (getDate()== null || o.getDate() == null) {
+            return 0;
+        }
+        return getDate().compareTo(o.getDate());
     }
 }

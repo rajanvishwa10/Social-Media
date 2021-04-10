@@ -124,15 +124,17 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         }
         String compareDate;
         try {
-            compareDate = checkDate(newTime[0]);
-            switch (compareDate) {
-                case "d1<d2":
-                case "d1>d2":
-                    holder.date.setText(newTime[0]);
-                    break;
-                case "today":
-                    holder.date.setText("Today");
-                    break;
+            if(chats.size()>1) {
+                compareDate = checkDate(newTime[0]);
+                switch (compareDate) {
+                    case "d1<d2":
+                    case "d1>d2":
+                        holder.date.setText(newTime[0]);
+                        break;
+                    case "today":
+                        holder.date.setText("Today");
+                        break;
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -292,7 +294,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
                 if (chat.isIsseen()) {
                     holder.isSeen.setText("Seen");
                 } else {
-                    holder.isSeen.setText("Delivered");
+                    holder.isSeen.setText("Sent");
                 }
             } else {
                 holder.isSeen.setVisibility(View.GONE);

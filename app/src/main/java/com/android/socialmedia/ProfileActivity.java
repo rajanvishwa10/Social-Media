@@ -293,9 +293,9 @@ public class ProfileActivity extends AppCompatActivity {
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         ImageList imageList1 = dataSnapshot.getValue(ImageList.class);
                         imageList.add(imageList1);
-                        Collections.reverse(imageList);
-                        System.out.println("Images = " + dataSnapshot.child("Image").getValue(String.class));
                     }
+                    Collections.reverse(imageList);
+//                    System.out.println("Images = " + dataSnapshot.child("Image").getValue(String.class));
                     galleryImageAdapter = new GalleryImageAdapter(ProfileActivity.this, imageList, username);
                     recyclerView.setAdapter(galleryImageAdapter);
                 } else {
