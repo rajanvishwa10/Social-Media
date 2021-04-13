@@ -446,6 +446,7 @@ public class UserChatActivity extends AppCompatActivity {
 
     private void readMessages(final String currentUsername, final String username) {
         myRef = FirebaseDatabase.getInstance().getReference("Messages");
+        myRef.keepSynced(true);
 
         myRef.addValueEventListener(new ValueEventListener() {
             @Override

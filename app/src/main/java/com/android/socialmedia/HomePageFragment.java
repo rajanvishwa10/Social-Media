@@ -60,6 +60,7 @@ public class HomePageFragment extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
 
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Images");
+        databaseReference.keepSynced(true);
         //Query query = databaseReference.orderByChild("username").equalTo(followingUsername);
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

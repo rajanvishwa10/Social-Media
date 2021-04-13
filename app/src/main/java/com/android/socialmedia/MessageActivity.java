@@ -62,8 +62,9 @@ public class MessageActivity extends AppCompatActivity {
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     editor.putString("username", currentUsername);
                     editor.apply();
-                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-                    databaseReference.child("Chatlist").child(currentUsername).addValueEventListener(new ValueEventListener() {
+                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Chatlist");
+                    databaseReference.keepSynced(true);
+                    databaseReference.child(currentUsername).addValueEventListener(new ValueEventListener() {
                         @RequiresApi(api = Build.VERSION_CODES.N)
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
