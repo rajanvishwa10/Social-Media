@@ -215,9 +215,11 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="5dp"
             android:layout_marginBottom="5dp"
-            android:gravity="center"
+            android:gravity="center|start"
             android:padding="10dp"
             android:text="hello"
+            android:maxWidth="200dp"
+            android:singleLine="false"
             android:textColor="@color/black"
             android:textIsSelectable="true"
             android:textSize="16sp" />
