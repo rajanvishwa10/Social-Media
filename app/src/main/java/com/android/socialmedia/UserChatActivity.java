@@ -69,6 +69,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Queue;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -121,10 +122,13 @@ public class UserChatActivity extends AppCompatActivity {
                 imageButton2.setVisibility(View.GONE);
             }
         });
+
         toolbar = findViewById(R.id.toolbar);
         username = getIntent().getStringExtra("username");
         toolbar.setTitle(username);
+
         read(username);
+
         toolbar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -174,23 +178,28 @@ public class UserChatActivity extends AppCompatActivity {
             visibleCardView();
             SelectImage();
         });
+
         videoLinearLayout.setOnClickListener(v -> {
             visibleCardView();
             selectVideo();
         });
+
         docLinearLayout.setOnClickListener(v -> {
             visibleCardView();
             Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
             intent.setType("application/*");
             startActivityForResult(intent.createChooser(intent, "Select file"), 4);
         });
+
         seenMessage(username);
+
         relativeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 visibleCardView();
             }
         });
+
         editText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
