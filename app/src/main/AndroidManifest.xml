@@ -15,17 +15,17 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.SocialMedia">
-        <activity android:name=".VideoActivity" />
-        <activity android:name=".ImageViewActivity" />
-        <activity android:name=".UserChatActivity" />
-        <activity android:name=".NewmessageActivity" />
-        <activity android:name=".MessageActivity" />
-        <activity android:name=".EditProfileActivity" />
-        <activity android:name=".CommentActivity" />
-        <activity android:name=".ListActivity" />
-        <activity android:name=".ProfileActivity" />
-        <activity android:name=".ProfileActivity2" />
-        <activity android:name=".UploadImageActivity" />
+        <activity android:name=".chatsPackage.VideoActivity" />
+        <activity android:name=".chatsPackage.ImageViewActivity" />
+        <activity android:name=".chatsPackage.UserChatActivity" />
+        <activity android:name=".chatsPackage.NewmessageActivity" />
+        <activity android:name=".chatsPackage.MessageActivity" />
+        <activity android:name=".profilePackage.EditProfileActivity" />
+        <activity android:name=".commentPackage.CommentActivity" />
+        <activity android:name=".likePackage.ListActivity" />
+        <activity android:name=".profilePackage.ProfileActivity" />
+        <activity android:name=".profilePackage.ProfileActivity2" />
+        <activity android:name=".profilePackage.UploadImageActivity" />
         <activity android:name=".SplashScreenActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -37,15 +37,15 @@
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:theme="@style/Base.Theme.AppCompat" />
         <activity
-            android:name=".RegisterActivity"
+            android:name=".AuthPackage.RegisterActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".LoginActivity"
+            android:name=".AuthPackage.LoginActivity"
             android:windowSoftInputMode="adjustResize">
 
         </activity>
         <activity
-            android:name=".MainActivity"
+            android:name=".homePackage.MainActivity"
             android:screenOrientation="portrait">
             <intent-filter android:label="DeepLink">
                 <action android:name="android.intent.action.VIEW" />
@@ -61,7 +61,7 @@
         </activity>
 
         <service
-            android:name=".MyFirebaseMessagingService"
+            android:name=".chatsPackage.MyFirebaseMessagingService"
             android:directBootAware="true"
             android:exported="false">
             <intent-filter>

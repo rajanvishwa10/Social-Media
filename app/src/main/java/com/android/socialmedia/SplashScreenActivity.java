@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 
+import com.android.socialmedia.AuthPackage.LoginActivity;
+
 public class SplashScreenActivity extends AppCompatActivity {
 
     @Override
@@ -15,6 +17,7 @@ public class SplashScreenActivity extends AppCompatActivity {
 
         new Handler().postDelayed(() -> {
             startActivity(new Intent(this, LoginActivity.class));
+            finish();
         },2500);
     }
 }

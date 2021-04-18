@@ -217,6 +217,8 @@
             android:padding="10dp"
             android:gravity="center|start"
             android:text="hello"
+            android:maxWidth="200dp"
+            android:singleLine="false"
             android:textColor="@color/black"
             android:textIsSelectable="true"
             android:textSize="16sp" />
