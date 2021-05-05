@@ -122,6 +122,8 @@ public class RegisterActivity extends AppCompatActivity {
                             hashMap.put("following", 0);
                             hashMap.put("profileImage", "");
                             hashMap.put("verified", false);
+                            hashMap.put("Bio","");
+                            hashMap.put("Website","");
                             FirebaseDatabase.getInstance().getReference("Users").
                                     child(FirebaseAuth.getInstance().getCurrentUser().getUid())
                                     .setValue(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {

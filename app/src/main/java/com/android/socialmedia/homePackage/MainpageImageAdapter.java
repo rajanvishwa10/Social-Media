@@ -94,6 +94,8 @@ public class MainpageImageAdapter extends RecyclerView.Adapter<MainpageImageAdap
                                         holder.constraintLayout.setVisibility(View.GONE);
                                     }
                                 }
+                            }else{
+                                holder.constraintLayout.setVisibility(View.GONE);
                             }
                         }
 

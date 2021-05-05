@@ -19,18 +19,22 @@ import android.widget.TextView;
 
 import com.android.socialmedia.R;
 import com.android.socialmedia.chatsPackage.MessageActivity;
+import com.android.socialmedia.followPackage.FollowAdapter;
+import com.android.socialmedia.followPackage.followList;
 import com.facebook.shimmer.ShimmerFrameLayout;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class HomePageFragment extends Fragment {
-    //String currentUsername, followingUsername;
+    String currentUsername, followingUsername;
     List<mainpageImagelist> imagelist;
     RecyclerView recyclerView;
     MainpageImageAdapter imageAdapter;
@@ -54,6 +58,7 @@ public class HomePageFragment extends Fragment {
         layoutManager.setReverseLayout(true);
         layoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(layoutManager);
+
 
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Images");
         databaseReference.keepSynced(true);

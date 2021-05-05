@@ -323,7 +323,7 @@ public class ProfileFragment extends Fragment {
                         }
                     });
 
-                   //editProfile.setBackgroundColor(getResources().getColor(R.color.white));
+                    //editProfile.setBackgroundColor(getResources().getColor(R.color.white));
                     editProfile.setBackgroundColor(Color.WHITE);
                     editProfile.setTextColor(Color.BLACK);
                     textView.setText("" + post);
@@ -347,15 +347,19 @@ public class ProfileFragment extends Fragment {
                     textView5.setText("" + followings);
                     textView5.setBackground(null);
                     textView5.setTextColor(Color.BLACK);
-                    if (bio.length() > 0) {
+                    if (bio == null) {
+                        textView6.setVisibility(View.GONE);
+                    } else {
+                        bio.length();
                         textView6.setVisibility(View.VISIBLE);
                         textView6.setText(bio);
                         textView6.setBackground(null);
                         textView6.setTextColor(Color.BLACK);
-                    } else {
-                        textView6.setVisibility(View.GONE);
                     }
-                    if (website.length() > 0) {
+
+                    if (website == null) {
+                        textView7.setVisibility(View.GONE);
+                    } else {
                         textView7.setVisibility(View.VISIBLE);
                         textView7.setText(website);
                         textView7.setBackground(null);
@@ -368,9 +372,6 @@ public class ProfileFragment extends Fragment {
                                 customTabsIntent.launchUrl(getContext(), Uri.parse(website));
                             }
                         });
-
-                    } else {
-                        textView7.setVisibility(View.GONE);
                     }
 
                     if (verified) {
