@@ -9,6 +9,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.socialmedia.profilePackage.ProfileActivity;
@@ -55,9 +56,17 @@ public class LikeAdapter extends RecyclerView.Adapter<LikeAdapter.ViewHolder> {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        String dp = dataSnapshot.child("profileImage").
+                                getValue(String.class);
+                        try{
+                            if(dp.isEmpty()){
+                                holder.circleImageView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_baseline_person_24));
+                            }else {
+                                Glide.with(context).load(dp).into(holder.circleImageView);
+                            }
+                        }catch (Exception e){e.printStackTrace();}
                         holder.textView2.setText(dataSnapshot.child("FullName").getValue(String.class));
-                        Glide.with(context).load(dataSnapshot.child("profileImage").
-                                getValue(String.class)).into(holder.circleImageView);
+
                     }
                 }
             }

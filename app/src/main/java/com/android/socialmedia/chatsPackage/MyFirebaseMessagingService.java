@@ -99,39 +99,44 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     }
                 }
 
-                Picasso.get().load(imageUrl).into(new Target() {
-                    @Override
-                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                if(imageUrl == null || imageUrl.equals("") || imageUrl.isEmpty()){
+                    System.out.println("image null");
+                }else{
+                    Picasso.get().load(imageUrl).into(new Target() {
+                        @Override
+                        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
 
-                        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), "CHAT")
-                                .setContentTitle(title)
-                                .setContentText(body)
-                                .setSmallIcon(R.drawable.socialmedia)
-                                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                                .setColor(ContextCompat.getColor(getApplicationContext(), R.color.ic_launcher_background))
-                                .setContentIntent(pendingIntent)
-                                .setLargeIcon(bitmap)
-                                .setAutoCancel(true);
-                        if (type.equals("like")) {
-                            builder.setStyle(new NotificationCompat.BigPictureStyle()
-                                    .bigPicture(bitmapImage));
+                            NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), "CHAT")
+                                    .setContentTitle(title)
+                                    .setContentText(body)
+                                    .setSmallIcon(R.drawable.socialmedia)
+                                    .setPriority(NotificationCompat.PRIORITY_HIGH)
+                                    .setColor(ContextCompat.getColor(getApplicationContext(), R.color.ic_launcher_background))
+                                    .setContentIntent(pendingIntent)
+                                    .setLargeIcon(bitmap)
+                                    .setAutoCancel(true);
+                            if (type.equals("like")) {
+                                builder.setStyle(new NotificationCompat.BigPictureStyle()
+                                        .bigPicture(bitmapImage));
+                            }
+
+                            NotificationManagerCompat managerCompat = NotificationManagerCompat.from(getApplicationContext());
+                            managerCompat.notify(12, builder.build());
+
                         }
 
-                        NotificationManagerCompat managerCompat = NotificationManagerCompat.from(getApplicationContext());
-                        managerCompat.notify(12, builder.build());
+                        @Override
+                        public void onBitmapFailed(Exception e, Drawable errorDrawable) {
 
-                    }
+                        }
 
-                    @Override
-                    public void onBitmapFailed(Exception e, Drawable errorDrawable) {
+                        @Override
+                        public void onPrepareLoad(Drawable placeHolderDrawable) {
 
-                    }
+                        }
+                    });
+                }
 
-                    @Override
-                    public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-                    }
-                });
 
             }
 

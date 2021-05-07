@@ -14,6 +14,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityOptionsCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.socialmedia.profilePackage.ProfileActivity;
@@ -81,10 +83,17 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         dp = dataSnapshot.child("profileImage").
                                 getValue(String.class);
-                        try {
-                            Glide.with(context).load(dp).into(holder.circleImageView);
+                        System.out.println("dp = " + dp);
 
-                            Glide.with(context).load(dp).into(holder.circleImageView2);
+                        try {
+                            if(dp.isEmpty()){
+                                holder.circleImageView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_baseline_person_24));
+                                holder.circleImageView2.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_baseline_person_24));
+                            }else {
+                                Glide.with(context).load(dp).placeholder(R.drawable.ic_placeholder).into(holder.circleImageView);
+
+                                Glide.with(context).load(dp).placeholder(R.drawable.ic_placeholder).into(holder.circleImageView2);
+                            }
                         }catch (Exception e){
                             e.printStackTrace();
                         }

@@ -62,7 +62,13 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         String url = dataSnapshot.child("profileImage").getValue(String.class);
 
-                        Glide.with(context).load(url).into(holder.circleImageView);
+                        try {
+                            if(url.isEmpty()){
+                                holder.circleImageView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_baseline_person_24));
+                            }else{
+                                Glide.with(context).load(url).into(holder.circleImageView);
+                            }
+                        }catch (Exception e){e.printStackTrace();}
                     }
                 } else {
                     Toast.makeText(context, "No user", Toast.LENGTH_SHORT).show();

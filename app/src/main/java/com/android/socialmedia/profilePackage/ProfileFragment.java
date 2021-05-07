@@ -391,11 +391,10 @@ public class ProfileFragment extends Fragment {
                     try {
                         if (url.isEmpty()) {
                             imageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_baseline_person_24));
-                            imageView.setBackground(null);
                         } else {
                             Glide.with(getContext()).load(url).placeholder(R.drawable.ic_placeholder).into(imageView);
-                            imageView.setBackground(null);
                         }
+                        imageView.setBackground(null);
                     } catch (NullPointerException e) {
                     }
 
